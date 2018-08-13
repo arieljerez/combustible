@@ -14,18 +14,65 @@ class UsuarioController extends Controller
    */
   public function index()
   {
-      $usuarios = User::paginate(10);
+      $orderby = $this->getOrden(request('ordenarpor'));
+      list($searchby,$search)= $this->getBuscar(request('buscarpor'),request('buscar'));
+
+      $query = User::orderby($orderby,'ASC');
+      if ($searchby){
+        $query = $query->where($searchby,'like','%'.$search.'%');
+      }
+      $perpage = $this->getPaginacion(request('paginacion'));
+
+      $usuarios = $query->paginate($perpage);
+
+      $usuarios->appends(['ordenarpor' => $orderby]);
+      $usuarios->appends(['paginacion' => $perpage]);
+      $usuarios->appends(['buscarpor' => $searchby]);
+      $usuarios->appends(['buscar' => $search]);
+
       return view('usuarios.index',compact('usuarios'));
   }
 
+  public function getPaginacion($perpage)
+  {
+    if ($perpage > 0){
+        return $perpage;
+    }
+    return 10;
+  }
+  public function getBuscar($searchby,$search)
+  {
+      if ($searchby =='dni'){
+        return ['dni',$search];
+      }
+      if ($searchby =='email'){
+        return ['email',$search];
+      }
+      return '';
+  }
+  public function getOrden($orderby)
+  {
+      if($orderby == 'dni'){
+        return 'dni';
+      }
+      if($orderby == 'email'){
+        return 'email';
+      }
+
+      if($orderby == 'created_at'){
+        return 'email';
+      }
+
+      return 'id';
+  }
   /**
    * Show the form for creating a new resource.
    *
    * @return \Illuminate\Http\Response
    */
-  public function create()
+  public function create(User $usuario)
   {
-      //
+      return view('usuarios.create', ['usuario' => $usuario]);
   }
 
   /**
@@ -36,7 +83,22 @@ class UsuarioController extends Controller
    */
   public function store(Request $request)
   {
-      //
+    $data = request()->validate([
+      'dni' => 'required|unique:usuarios,dni',
+      'email' => 'required|unique:usuarios,email',
+      'password' => 'required|confirmed',
+    ], [
+      'dni.required' => 'El campo DNI es obligatorio'
+    ]);
+
+    User::create([
+      'dni' => $data['dni'],
+      'email' => $data['email'],
+      'password' => bcrypt($data['password']),
+      'role_id' => 1
+    ]);
+
+    return redirect()->route('usuarios.index');
   }
 
   /**
@@ -45,9 +107,9 @@ class UsuarioController extends Controller
    * @param  int  $id
    * @return \Illuminate\Http\Response
    */
-  public function show($id)
+  public function show(user $usuario)
   {
-      //
+      return view('usuarios.show', ['usuario' => $usuario]);
   }
 
   /**
@@ -56,10 +118,10 @@ class UsuarioController extends Controller
    * @param  int  $id
    * @return \Illuminate\Http\Response
    */
-  public function edit($id)
-  {
-      //
-  }
+   public function edit(User $usuario)
+   {
+       return view('usuarios.edit', ['usuario' => $usuario]);
+   }
 
   /**
    * Update the specified resource in storage.
@@ -68,9 +130,21 @@ class UsuarioController extends Controller
    * @param  int  $id
    * @return \Illuminate\Http\Response
    */
-  public function update(Request $request, $id)
+  public function update(Request $request, User $usuario)
   {
-      //
+      $data = request()->validate([
+              'dni' => 'required',
+              'email' => 'required',
+              'password' => 'nullable'
+      ]);
+
+      if ($data['password'] != null) {
+          $data['password'] = bcrypt($data['password']);
+      } else {
+          unset($data['password']);
+      }
+      $usuario->update($data);
+      return redirect()->route('usuarios.index', ['usuario' => $usuario]);
   }
 
   /**

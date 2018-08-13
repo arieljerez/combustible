@@ -6,30 +6,19 @@
               <div class="card-body">
                 <div class="row">
                   <div class="col-md-6 mb-3">
-                    <a href="url('usuarios/create')" class="btn btn-primary">+ Nuevo Usuario</a>
+                    <a href="{{url('usuarios/create')}}" class="btn btn-primary"><i class="fas fa-plus"></i> Nuevo Usuario</a>
                   </div>
                 </div>
-                <form method="get" action="{{url('usuarios')}}">
-                  <div class="row">
-                    <div class="col-md-3 mb-3">
-                        <input type="text" id="dni" name="dni" class="form-control" placeholder="DNI" />
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        <input type="text" id="email" name="email" class="form-control" placeholder="Email"/>
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        <select id="email" name="rol" class="form-control" >
-                          <option value=""> Roles </option>
-                          <option value="1"> Administrador </option>
-                          <option value="2"> Conductor </option>
-                          <option value="3"> Playero </option>
-                        </select>
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        <button type="submit" class="btn btn-info"> <i class="fas fa-search"></i> Buscar</button>
-                    </div>
+
+                @include('usuarios.filters')
+
+                @if( $usuarios->count() > 0)
+                <div class="row">
+                  <div class="col-md-4 mb-4">
+                    Encontrados: {{$usuarios->count()}} de {{$usuarios->total()}}
                   </div>
-                </form>
+                </div>
+
                 <div class="table-responsive">
                   <table class="table table-striped table-condensed">
                     <thead>
@@ -41,9 +30,13 @@
                     <tbody>
                         @foreach( $usuarios as $usuario)
                           <tr>
-                              <td>{{ $usuario->dni }}</td>
+                              <td>
+                                <p class="h4">{{ $usuario->dni }}</p>
+                                <p><small>Registro: {{ $usuario->created_at->format('d/m/Y') }}</small>
+                                <small>Último login: {{ $usuario->created_at->format('d/m/Y') }}</small></p>
+                              </td>
                               <td>{{ $usuario->email }}</td>
-                              <td>{{ $usuario->role_id }}$$$$$$$$$$$$$$$S</td>
+                              <td>{{ $usuario->role_id }}</td>
                               <td>
                                   <action-icons url="{{ url('usuarios') }}" :id="{{ $usuario->id }}" token="{{ csrf_token() }}"></action-icons>
                               </td>
@@ -54,6 +47,13 @@
                 </div>
 
                 {{ $usuarios->links() }}
+                @else
+                <div class="row">
+                  <div class="col-md-3 mb-3">
+                    No se encontraron resultados
+                  </div>
+                </div>
+                @endif
               </div>
           </div>
 
