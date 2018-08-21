@@ -15,7 +15,8 @@ class CreateEstacionesTable extends Migration
     {
         Schema::create('estaciones', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('persona_id')->unsigned();
+            $table->string('codigo',10);
+            $table->string('nombre',100);
             $table->timestamps();
         });
     }
