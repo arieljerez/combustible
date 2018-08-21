@@ -23,20 +23,22 @@
                   <table class="table table-striped table-condensed">
                     <thead>
                         <th>DNI</th>
-                        <th>Email</th>
+                        <th>Nombre</th>
                         <th>Rol</th>
-                        <th>Actions</th>
+                        <th>Acciones</th>
                     </thead>
                     <tbody>
                         @foreach( $usuarios as $usuario)
                           <tr>
                               <td>
                                 <p class="h4">{{ $usuario->dni }}</p>
-                                <p><small>Registro: {{ $usuario->created_at->format('d/m/Y') }}</small>
-                                <small>Último login: {{ $usuario->created_at->format('d/m/Y') }}</small></p>
+                                <small>Registro: {{ $usuario->created_at->format('d/m/Y') }}</small>
                               </td>
-                              <td>{{ $usuario->email }}</td>
-                              <td>{{ $usuario->role_id }}</td>
+                              <td>{{ $usuario->nombre }}
+                                <p>
+                                  <small>{{ $usuario->email }}</small>
+                                </p></td>
+                              <td>{{ $usuario->rol }}</td>
                               <td>
                                   <action-icons url="{{ url('usuarios') }}" :id="{{ $usuario->id }}" token="{{ csrf_token() }}"></action-icons>
                               </td>

@@ -17,9 +17,15 @@ class UsuarioController extends Controller
       $orderby = $this->getOrden(request('ordenarpor'));
       list($searchby,$search)= $this->getBuscar(request('buscarpor'),request('buscar'));
 
+      $rol =  $this->getRol(request('rol'));
       $query = User::orderby($orderby,'ASC');
+
       if ($searchby){
         $query = $query->where($searchby,'like','%'.$search.'%');
+      }
+
+      if($rol){
+        $query = $query->where('rol',$rol);
       }
       $perpage = $this->getPaginacion(request('paginacion'));
 
@@ -29,8 +35,23 @@ class UsuarioController extends Controller
       $usuarios->appends(['paginacion' => $perpage]);
       $usuarios->appends(['buscarpor' => $searchby]);
       $usuarios->appends(['buscar' => $search]);
+      $usuarios->appends(['rol' => $rol]);
 
       return view('usuarios.index',compact('usuarios'));
+  }
+
+  public function getRol($rol)
+  {
+    if ($rol =='administrador'){
+      return 'administrador';
+    }
+    if ($rol =='usuario'){
+      return 'usuario';
+    }
+    if ($rol =='playero'){
+      return 'playero';
+    }
+    return '';
   }
 
   public function getPaginacion($perpage)
@@ -48,6 +69,9 @@ class UsuarioController extends Controller
       if ($searchby =='email'){
         return ['email',$search];
       }
+      if ($searchby =='nombre'){
+        return ['nombre',$search];
+      }
       return '';
   }
   public function getOrden($orderby)
@@ -58,9 +82,12 @@ class UsuarioController extends Controller
       if($orderby == 'email'){
         return 'email';
       }
+      if($orderby == 'nombre'){
+        return 'nombre';
+      }
 
       if($orderby == 'created_at'){
-        return 'email';
+        return 'created_at';
       }
 
       return 'id';
@@ -87,6 +114,8 @@ class UsuarioController extends Controller
       'dni' => 'required|unique:usuarios,dni',
       'email' => 'required|unique:usuarios,email',
       'password' => 'required|confirmed',
+      'nombre' => 'required',
+      'rol' => 'required'
     ], [
       'dni.required' => 'El campo DNI es obligatorio'
     ]);
@@ -95,7 +124,8 @@ class UsuarioController extends Controller
       'dni' => $data['dni'],
       'email' => $data['email'],
       'password' => bcrypt($data['password']),
-      'role_id' => 1
+      'rol' => $data['rol'],
+      'nombre' => $data['nombre']
     ]);
 
     return redirect()->route('usuarios.index');
@@ -133,9 +163,11 @@ class UsuarioController extends Controller
   public function update(Request $request, User $usuario)
   {
       $data = request()->validate([
-              'dni' => 'required',
-              'email' => 'required',
-              'password' => 'nullable'
+              'dni' => 'required|digits_between:8,11',
+              'email' => 'nullable',
+              'password' => 'nullable',
+              'nombre' => 'required',
+              'rol' => 'required'
       ]);
 
       if ($data['password'] != null) {

@@ -6,6 +6,7 @@
           <option value="" {{ request('buscarpor') == '' ? ' selected': ''}}> Buscar por </option>
           <option value="dni" {{ request('buscarpor') == 'dni' ? ' selected': ''}}> DNI </option>
           <option value="email" {{ request('buscarpor') == 'email' ? ' selected': ''}}> Email </option>
+          <option value="nombre" {{ request('buscarpor') == 'nombre' ? ' selected': ''}}> Nombre </option>
         </select>
         <input type="text" id="buscar" name="buscar" class="form-control" placeholder="Buscar" value="{{ request('buscar')}}" />
     </div>
@@ -13,10 +14,9 @@
     <div class="col-md-2 mb-2">
         <select id="rol" name="rol" class="custom-select d-block w-100" >
           <option value="" {{ request('rol') == '' ? ' selected': ''}}> Roles </option>
-          <option value="1" {{ request('rol') == 1 ? ' selected': ''}}> Administrador </option>
-          <option value="4" {{ request('rol') == 4 ? ' selected': ''}}> Adm.Cuentas </option>
-          <option value="2" {{ request('rol') == 2 ? ' selected': ''}}> Conductor </option>
-          <option value="3" {{ request('rol') == 3 ? ' selected': ''}}> Playero </option>
+          <option value="administrador" {{ request('rol') == 'administrador' ? ' selected': ''}}> Administrador </option>
+          <option value="usuario" {{ request('rol') == 'usuario' ? ' selected': ''}}> Usuario </option>
+          <option value="playero" {{ request('rol') == 'playero' ? ' selected': ''}}> Playero </option>
         </select>
     </div>
 
@@ -35,10 +35,10 @@
         </select>
     </div>
 
-    <div class="input-group-append col-md-2 mb-2">
+    <div class="input-group-append col-md-3 mb-3">
         <div class="input-group-prepend">
           <div class="input-group-text">
-            <i class="fab fa-page4"></i>
+            P
           </div>
         </div>
         <select id="paginacion" name="paginacion" class="custom-select">
@@ -49,11 +49,10 @@
           <option value="100" {{ request('paginacion') == '100' ? ' selected': '' }}> 100 </option>
         </select>
     </div>
-
-    <div class="col-md-1 mb-1">
+  </div>
+  <div class="row">
+    <div class="col-md-4">
         <button type="submit" class="btn btn-info"> <i class="fas fa-search"></i> Buscar</button>
-    </div>
-    <div class="col-md-1 mb-1">
         <a href="{{ url('usuarios') }}" class="btn btn-info"> <i class="fas fa-eraser"></i> Limpiar</a>
     </div>
   </div>

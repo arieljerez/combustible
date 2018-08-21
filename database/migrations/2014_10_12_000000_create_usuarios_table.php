@@ -18,14 +18,12 @@ class CreateUsuariosTable extends Migration
             $table->string('dni')->unique();
             $table->string('email')->unique();
             $table->string('password');
-            $table->string('role_id');
+            $table->enum('rol',['administrador','usuario','playero']);
+            $table->string('nombre',200);
             $table->rememberToken();
             $table->timestamps();
         });
     }
-//DNI	NOMBRES_APELLIDOS	EMAIL	TELEFONO_CEL	TELEFONO_FIJO	DIRECCION	FECHA_NACIMIENTO
-//DIRECCION	FECHA_NACIMIENTO	ESTACION_CODIGO	LOCALIDAD	CIUDAD
-
 
     /**
      * Reverse the migrations.
