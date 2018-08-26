@@ -16,7 +16,8 @@
           <option value="" {{ request('rol') == '' ? ' selected': ''}}> Roles </option>
           <option value="administrador" {{ request('rol') == 'administrador' ? ' selected': ''}}> Administrador </option>
           <option value="usuario" {{ request('rol') == 'usuario' ? ' selected': ''}}> Usuario </option>
-          <option value="playero" {{ request('rol') == 'playero' ? ' selected': ''}}> Playero </option>
+          <option value="expendedor" {{ request('rol') == 'expendedor' ? ' selected': ''}}> Expendedor </option>
+          <option value="cuenta_principal" {{ request('rol') == 'cuenta_principal' ? ' selected': ''}}> Cuenta Principal </option>
         </select>
     </div>
 

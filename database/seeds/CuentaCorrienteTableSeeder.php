@@ -37,7 +37,7 @@ class CuentaCorrienteTableSeeder extends Seeder
 
         foreach ($cuentas as $cuenta) {
 
-          $cuenta_saldo = DB::table('cuenta_corriente')->where('id',$cuenta->id)
+          $cuenta_saldo = DB::table('cuenta_corriente')->where('usuario_id',$cuenta->id)
               ->latest()
               ->value('saldo');
 
@@ -65,10 +65,10 @@ class CuentaCorrienteTableSeeder extends Seeder
                   ['es_cuenta_principal','=',false]
                 ])
                 ->inRandomOrder()->first();
-            $cuenta_destino_saldo = DB::table('cuenta_corriente')->where('id',$cuenta_destino->id)
+            $cuenta_destino_saldo = DB::table('cuenta_corriente')->where('usuario_id',$cuenta_destino->id)
                 ->latest()
                 ->value('saldo');
-            $cuenta_origen_saldo = DB::table('cuenta_corriente')->where('id',$cuenta->id)
+            $cuenta_origen_saldo = DB::table('cuenta_corriente')->where('usuario_id',$cuenta->id)
                     ->latest()
                     ->value('saldo');
           // egreso

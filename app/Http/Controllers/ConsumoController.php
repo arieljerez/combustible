@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\User;
+use Illuminate\Support\Facades\DB as DB;
+use App\CuentaCorriente;
 
 class ConsumoController extends Controller
 {
@@ -40,15 +42,15 @@ class ConsumoController extends Controller
         'monto' => 'required|min:1'
       ]);
 
-      $cuenta_principal_id =  User::where('id',$id)->value('$cuenta_principal_id');
+      $cuenta_principal_id =  User::where('id',$id)->value('cuenta_principal_id');
 
-      $linea = DB::table('cuenta_corriente')
+      $linea = \DB::table('cuenta_corriente')
                       //  ->select(\Illuminate\Support\Facades\DB::raw('max(linea) as linea'))
                         ->groupby('usuario_id')
                         ->where('usuario_id','=',$cuenta_principal_id)
                         ->value(DB::raw('max(linea) as linea'));
       $saldo = DB::table('cuenta_corriente')
-                              ->where('usuario_id','=',request('cuenta_origen_id'))
+                              ->where('usuario_id','=',$cuenta_principal_id)
                               ->where('linea',$linea)
                               ->value('saldo');
 
@@ -69,30 +71,68 @@ class ConsumoController extends Controller
     public function grabar($id,$monto)
     {
       $pin = request('pin');
-      if ($pin != '1234'){
+
+      if (\Auth::attempt(['id' => $id, 'password' => $pin])) {
         return back()->withErrors(['pin' => 'PIN incorrecto']);
       }
-      return view('consumo.grabar',compact(['id','monto']));
-    }
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
+
+      $cuenta_principal_id =  User::where('id',$id)->value('cuenta_principal_id');
+      // grabar Consumo
+      //
+      $cuenta_principal= DB::table('cuenta_corriente')->where('usuario_id',$cuenta_principal_id)
+          ->latest()
+          ->first();
+
+      $datos['saldo'] =  $cuenta_principal->saldo - $monto;
+      \Validator::make($datos, [
+          'saldo' => [
+              'numeric',
+              'min:0',
+          ],
+      ],
+      [
+        'saldo.min' => 'Saldo insuficiente'
+      ])->validate();
+
+      $estacion_id = 1;
+      $estacion = DB::table('estaciones')->where('id',$estacion_id)->value('nombre');
+      $consumidor = DB::table('usuarios')->where('id',$id)->value('nombre');
+
+
+      $cc = CuentaCorriente::Create([
+        'usuario_id' => $cuenta_principal->usuario_id,
+        'linea' => $cuenta_principal->linea + 1,
+        'tipo_movimiento' => 'consumo',
+        'saldo' => $cuenta_principal->saldo - $monto,
+        'monto' => $monto * -1,
+        'audi_usuario_id' => \Auth::id(),
+        'usuario_id_consumidor' => $id,
+        'estacion_id' => $estacion_id,
+        'comentarios' => 'Consumo Estacion: '. $estacion. ' por '. $consumidor
+      ]);
+      $expendedor = \Auth::user()->nombre;
+      $fecha = $cc->created_at;
+
+
+      $datos = compact(['consumidor','monto','estacion','fecha','expendedor']);
+
+      return redirect('consumo/registrado')->with('datos',$datos);
+
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
+    public function show()
     {
-        //
+        if(empty(session('datos'))){
+          return redirect('consumo');
+        }
+        $datos = session('datos');
+        $consumidor = $datos['consumidor'];
+        $monto = $datos['monto'];
+        $estacion = $datos['estacion'];
+        $fecha = $datos['fecha'];
+        $expendedor = $datos['expendedor'];
+        return view('consumo.grabar',compact(['consumidor','monto','estacion','fecha','expendedor']));
     }
+
+
 }

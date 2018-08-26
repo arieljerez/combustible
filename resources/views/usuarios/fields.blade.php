@@ -30,11 +30,12 @@
     <label for="name" class="col-md-4 col-form-label text-md-right">{{ __('Rol') }}</label>
 
     <div class="col-md-6">
-        <select id="rol" name="rol" class="form-control{{ $errors->has('rol') ? ' is-invalid' : '' }}">
+        <select id="rol" name="rol" class="form-control{{ $errors->has('rol') ? ' is-invalid' : '' }}" required>
           <option value="" {{ old('rol',$usuario->rol)  == '' ? ' selected': ''}}> Roles </option>
           <option value="administrador" {{ old('rol',$usuario->rol)  == 'administrador' ? ' selected': ''}}> Administrador </option>
           <option value="usuario" {{ old('rol',$usuario->rol)  == 'usuario' ? ' selected': ''}}> Usuario </option>
-          <option value="playero" {{ old('rol',$usuario->rol)  == 'playero' ? ' selected': ''}}> Playero </option>
+          <option value="expendedor" {{ old('rol',$usuario->rol)  == 'expendedor' ? ' selected': ''}}> Expendedor </option>
+          <option value="cuenta_principal" {{ old('rol',$usuario->rol)  == 'cuenta_principal' ? ' selected': ''}}> Cuenta Principal </option>
         </select>
 
         @if ($errors->has('rol'))
@@ -47,15 +48,43 @@
 
 
 <div class="form-group row">
-    <label for="email" class="col-md-4 col-form-label text-md-right">{{ __('E-Mail Address') }}</label>
+    <label for="email" class="col-md-4 col-form-label text-md-right">{{ __('Correo electrónico') }}</label>
 
     <div class="col-md-6">
-        <input id="email" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" name="email" value="{{ old('email',$usuario->email) }}" required>
+        <input id="email" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" name="email" value="{{ old('email',$usuario->email) }}">
 
         @if ($errors->has('email'))
             <span class="invalid-feedback" role="alert">
                 <strong>{{ $errors->first('email') }}</strong>
             </span>
         @endif
+    </div>
+</div>
+
+<div class="form-group row">
+    <label for="es_cuenta_principal" class="col-md-4 col-form-label text-md-right">{{ __('Es Cuenta /c principal ') }}</label>
+
+    <div class="col-md-1">
+        <input id="es_cuenta_principal" type="checkbox" class="form-control" name="es_cuenta_principal" value="{{ old('es_cuenta_principal',$usuario->es_cuenta_principal) }}" {{ old('es_cuenta_principal',$usuario->es_cuenta_principal) == 1? 'checked': '' }} >
+    </div>
+</div>
+
+<div class="form-group row">
+    <label for="cuenta_principal" class="col-md-4 col-form-label text-md-right">{{ __('Cuenta principal ') }}</label>
+
+    <div class="col-md-6">
+          @php
+          $cuentas = App\User::where('es_cuenta_principal',true)->get();
+        @endphp
+        <select id="cuenta_principal" name="cuenta_principal" class="form-control">
+          <option value=""  {{ old('cuenta_principal_id',$usuario->cuenta_principal_id) == '' ? 'selected': '' }} >
+            Seleccione una cuenta principal
+          </option>
+          @foreach($cuentas as $cuenta)
+          <option value="{{ $cuenta->id }}" {{ old('cuenta_principal_id',$usuario->cuenta_principal_id) == $cuenta->id ? 'selected': '' }}>
+            {{ $cuenta->nombre }}
+          </option>
+          @endforeach
+        </select>
     </div>
 </div>

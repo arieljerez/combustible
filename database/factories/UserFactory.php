@@ -19,8 +19,9 @@ $factory->define(App\User::class, function (Faker $faker) {
         'email' => $faker->unique()->safeEmail,
         'password' => bcrypt('1234'), // secret
         'remember_token' => str_random(10),
-        'rol' => $faker->randomElement(['usuario' ,'playero','administrador']),
+        'rol' => $faker->randomElement(['usuario' ,'expendedor','administrador']),
         'nombre' => $faker->name,
-        'comentarios' => ''
+        'comentarios' => '',
+        'es_cuenta_principal' => false,
     ];
 });

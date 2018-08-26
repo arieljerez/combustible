@@ -22,9 +22,31 @@ class UsersTableSeeder extends Seeder
         'cuenta_principal_id' => null,
         ]);
 
+      factory(App\User::class, 3)->create([
+        'es_cuenta_principal' => false,
+        'cuenta_principal_id' => null,
+        'rol' => 'expendedor',
+        'estacion_id' => 1,
+      ]);
+
+      factory(App\User::class, 3)->create([
+        'es_cuenta_principal' => false,
+        'cuenta_principal_id' => null,
+        'rol' => 'expendedor',
+        'estacion_id' => 2,
+      ]);
+
+      factory(App\User::class, 4)->create([
+        'es_cuenta_principal' => false,
+        'cuenta_principal_id' => null,
+        'rol' => 'expendedor',
+        'estacion_id' => 3,
+      ]);
+
       factory(App\User::class, 20)->create([
         'es_cuenta_principal' => true,
         'cuenta_principal_id' => null,
+        'rol' => 'cuenta_principal'
       ])
       ->each(function ($u) {
         $rand =  rand ( 3, 15 );
@@ -32,6 +54,7 @@ class UsersTableSeeder extends Seeder
           factory(App\User::class)->create([
             'cuenta_principal_id' => $u->id,
             'es_cuenta_principal' => false,
+            'rol' => 'usuario'
           ]);
         }
       });

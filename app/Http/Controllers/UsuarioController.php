@@ -48,8 +48,11 @@ class UsuarioController extends Controller
     if ($rol =='usuario'){
       return 'usuario';
     }
-    if ($rol =='playero'){
-      return 'playero';
+    if ($rol =='expendedor'){
+      return 'expendedor';
+    }
+    if ($rol =='cuenta_principal'){
+      return 'cuenta_principal';
     }
     return '';
   }
@@ -120,6 +123,10 @@ class UsuarioController extends Controller
       'dni.required' => 'El campo DNI es obligatorio'
     ]);
 
+    if (!empty($data['es_cuenta_principal'])){
+      $data['rol'] = 'cuenta principal';
+    }
+
     User::create([
       'dni' => $data['dni'],
       'email' => $data['email'],
@@ -174,6 +181,9 @@ class UsuarioController extends Controller
           $data['password'] = bcrypt($data['password']);
       } else {
           unset($data['password']);
+      }
+      if (!empty($data['es_cuenta_principal'])){
+        $data['rol'] = 'cuenta principal';
       }
       $usuario->update($data);
       return redirect()->route('usuarios.index', ['usuario' => $usuario]);

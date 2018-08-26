@@ -10,19 +10,43 @@
 
                 <div class="card-body">
 
+
+
                     <div class="row justify-content-center">
                       <div class="col-md-8">
                         <label for="consumidor">Consumidor:</label>
-                        <label class="form-control" id="consumidor">{{ $id }}</label>
+                        <label class="form-control">{{ $consumidor }}</label>
                       </div>
                     </div>
 
                     <div class="row justify-content-center">
                       <div class="col-md-8">
                         <label for="monto">Monto Consumido:</label>
-                        <label class="form-control" id="monto">{{ $monto }}</label>
+                        <label class="form-control">{{ $monto }}</label>
                       </div>
                     </div>
+
+                    <div class="row justify-content-center">
+                      <div class="col-md-8">
+                        <label for="expendedor">Expendedor:</label>
+                        <label class="form-control">{{ $expendedor }}</label>
+                                            </div>
+                      </div>
+
+                      <div class="row justify-content-center">
+                        <div class="col-md-8">
+                          <label for="expendedor">Estación:</label>
+                          <label class="form-control">{{ $estacion }}</label>
+                                                </div>
+                      </div>
+
+                      <div class="row justify-content-center">
+                        <div class="col-md-8">
+                          <label for="expendedor">Fecha / Hora:</label>
+                          <label class="form-control">{{ $fecha }}</label>
+                                                </div>
+                      </div>
+
 
                     <div class="row justify-content-center">
                       <div class="col-md-8">
