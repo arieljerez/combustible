@@ -29,7 +29,7 @@ class ConsumoController extends Controller
     }
 
     public function ingresar($id){
-      $usuario =  User::findOrFail($id);
+      $usuario =  User::where('id',$id)->first();
       return view('consumo.ingresar',compact('usuario'));
     }
 
@@ -40,8 +40,19 @@ class ConsumoController extends Controller
         'monto' => 'required|min:1'
       ]);
 
-      $saldo = 400 - $data['monto'];
-      if ($saldo < 0){
+      $cuenta_principal_id =  User::where('id',$id)->value('$cuenta_principal_id');
+
+      $linea = DB::table('cuenta_corriente')
+                      //  ->select(\Illuminate\Support\Facades\DB::raw('max(linea) as linea'))
+                        ->groupby('usuario_id')
+                        ->where('usuario_id','=',$cuenta_principal_id)
+                        ->value(DB::raw('max(linea) as linea'));
+      $saldo = DB::table('cuenta_corriente')
+                              ->where('usuario_id','=',request('cuenta_origen_id'))
+                              ->where('linea',$linea)
+                              ->value('saldo');
+
+      if (($saldo - $monto) < 0){
           return back()->withErrors(['saldo'=> 'Saldo Insuficiente']);
       }
 

@@ -11,6 +11,11 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
+        $estacion = App\Estacion::create([
+          'codigo' => 'EST01',
+          'nombre' => 'YPF'
+        ]);
         $this->call(UsersTableSeeder::class);
+        $this->call(CuentaCorrienteTableSeeder::class);
     }
 }

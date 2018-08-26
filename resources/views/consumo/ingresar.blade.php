@@ -25,7 +25,7 @@
                     </div>
                     <div class="row justify-content-center">
 
-                      <div class="input-group-append  col-md-8">
+                      <div class="input-group-append col-md-8">
                         <div class="input-group-prepend">
                           <div class="input-group-text">
                             $

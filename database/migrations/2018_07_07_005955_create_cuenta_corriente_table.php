@@ -15,27 +15,37 @@ class CreateCuentaCorrienteTable extends Migration
     {
         Schema::create('cuenta_corriente', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('conductor_id')->unsigned();
+            $table->integer('usuario_id')->unsigned();
             $table->integer('linea')->unsigned()->default(1);
-            $table->integer('conductor_id_destino')->unsigned();
-            $table->integer('conductor_id_origen')->unsigned();
-            $table->integer('playero_id')->unsigned()->nulleable();
+            $table->integer('usuario_id_destino')->nulleable()->unsigned();
+            $table->integer('usuario_id_origen')->nulleable()->unsigned();
             $table->integer('estacion_id')->unsigned()->nulleable();
-            $table->enum('tipo_movimiento',['transferencia','consumo','deposito']);
+            $table->string('comentarios',200)->default('');
+            $table->enum('tipo_movimiento',['transferencia','consumo','deposito','extraccion']);
             $table->double('saldo', 8, 2)->default(0);
             $table->double('monto', 8, 2)->default(0);
-            $table->integer('usuario_id')->unsigned();
+            $table->integer('audi_usuario_id')->unsigned();
+            $table->integer('usuario_id_consumidor')->unsigned();
             $table->timestamps();
 
-            $table->index('conductor_id');
-            $table->index('conductor_id','linea');
+            $table->index('usuario_id');
+            $table->index('usuario_id','linea');
 
-            $table->foreign('conductor_id')->references('id')->on('conductores');
             $table->foreign('usuario_id')->references('id')->on('usuarios');
-            $table->foreign('playero_id')->references('id')->on('playeros');
-            $table->foreign('conductor_id_destino')->references('id')->on('conductores');
-            $table->foreign('conductor_id_origen')->references('id')->on('conductores');
+            $table->foreign('audi_usuario_id')->references('id')->on('usuarios');
+            //$table->foreign('usuario_id_destino')->references('id')->on('usuarios');
+            //$table->foreign('usuario_id_origen')->references('id')->on('usuarios');
         });
+
+        DB::statement('ALTER TABLE `cuenta_corriente`
+                    	CHANGE COLUMN `usuario_id_destino` `usuario_id_destino` INT(10) UNSIGNED NULL AFTER `linea`,
+                    	CHANGE COLUMN `usuario_id_origen` `usuario_id_origen` INT(10) UNSIGNED NULL AFTER `usuario_id_destino`;');
+        DB::statement('ALTER TABLE `cuenta_corriente`
+	                    CHANGE COLUMN `estacion_id` `estacion_id` INT(10) UNSIGNED NULL AFTER `usuario_id_origen`;
+                      ');
+        DB::statement('ALTER TABLE `cuenta_corriente`
+	                    CHANGE COLUMN `usuario_id_consumidor` `usuario_id_consumidor` INT(10) UNSIGNED NULL AFTER `estacion_id`;
+                      ');
     }
 
     /**

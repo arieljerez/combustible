@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use Validator;
 use App\CuentaCorriente;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB as DB;
+use App\User;
 
 class CuentaCorrienteController extends Controller
 {
@@ -14,17 +17,130 @@ class CuentaCorrienteController extends Controller
      */
     public function index()
     {
-        //
+        $ultimaslineas = DB::table('cuenta_corriente')
+                          ->select('usuario_id',DB::raw('max(linea) as linea'))
+                          ->groupby('usuario_id');
+
+        $query = DB::table('cuenta_corriente')
+              ->joinSub($ultimaslineas,'cc', function($join){
+                  $join->on('cuenta_corriente.usuario_id','=','cc.usuario_id');
+                  $join->on('cuenta_corriente.linea','=','cc.linea');
+              })
+              ->join('usuarios', 'cuenta_corriente.usuario_id','=','usuarios.id')
+              ->select('cuenta_corriente.id','usuarios.nombre', 'usuarios.dni', 'cuenta_corriente.usuario_id', 'cuenta_corriente.linea', 'cuenta_corriente.saldo');
+
+              $orderby = $this->getOrden(request('ordenarpor'));
+              list($searchby,$search)= $this->getBuscar(request('buscarpor'),request('buscar'));
+
+              if ($searchby){
+                $query = $query->where($searchby,'like','%'.$search.'%');
+              }
+
+              $perpage = $this->getPaginacion(request('paginacion'));
+
+              $cc = $query->paginate($perpage);
+
+              $cc->appends(['ordenarpor' => $orderby]);
+              $cc->appends(['paginacion' => $perpage]);
+              $cc->appends(['buscarpor' => $searchby]);
+              $cc->appends(['buscar' => $search]);
+
+        return view('cuentacorriente.index',compact('cc'));
+    }
+    public function getRol($rol)
+    {
+      if ($rol =='administrador'){
+        return 'administrador';
+      }
+      if ($rol =='usuario'){
+        return 'usuario';
+      }
+      if ($rol =='playero'){
+        return 'playero';
+      }
+      return '';
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+    public function getPaginacion($perpage)
     {
-        //
+      if ($perpage > 0){
+          return $perpage;
+      }
+      return 10;
+    }
+    public function getBuscar($searchby,$search)
+    {
+        if ($searchby =='dni'){
+          return ['dni',$search];
+        }
+        if ($searchby =='email'){
+          return ['email',$search];
+        }
+        if ($searchby =='nombre'){
+          return ['nombre',$search];
+        }
+        if ($searchby =='origen'){
+          return ['uo.nombre',$search];
+        }
+        if ($searchby == 'destino'){
+          return ['ud.nombre',$search];
+        }
+        return '';
+    }
+    public function getOrden($orderby)
+    {
+        if($orderby == 'dni'){
+          return 'dni';
+        }
+        if($orderby == 'email'){
+          return 'email';
+        }
+        if($orderby == 'nombre'){
+          return 'nombre';
+        }
+
+        if($orderby == 'created_at'){
+          return 'created_at';
+        }
+
+        return 'id';
+    }
+    public function transferir($id){
+
+      $cuentas = DB::table('usuarios')
+            ->where([['usuarios.rol','<>','playero'],['usuarios.id','<>',$id]])
+            ->select('id','nombre')
+            ->get();
+      $nombre = User::where('id',$id)->value('nombre');
+      return view('cuentacorriente.transferir',['id' => $id,'cuentas' => $cuentas,'nombre' => $nombre]);
+    }
+
+    public function iniciar($id){
+
+      $cuentas = DB::table('usuarios')
+            ->whereNotExists(function ($query) {
+                $query->select(DB::raw(1))
+                      ->from('cuenta_corriente')
+                      ->whereRaw('cuenta_corriente.usuario_id = usuarios.id');
+
+            })
+            ->where('usuarios.rol','<>','playero')
+            ->select('id','nombre')
+            ->get();
+      return view('cuentacorriente.iniciar',['cuentas' => $cuentas]);
+    }
+
+    public function depositar($id){
+      $nombre = User::where('id',$id)->value('nombre');
+
+      return view('cuentacorriente.depositar',['id' => $id,'nombre' => $nombre]);
+    }
+
+    public function extraer($id){
+
+      $nombre = User::where('id',$id)->value('nombre');
+
+      return view('cuentacorriente.extraer',['id' => $id,'nombre' => $nombre]);
     }
 
     /**
@@ -35,7 +151,139 @@ class CuentaCorrienteController extends Controller
      */
     public function store(Request $request)
     {
-        //
+
+      $linea = DB::table('cuenta_corriente')
+                      //  ->select(\Illuminate\Support\Facades\DB::raw('max(linea) as linea'))
+                        ->groupby('usuario_id')
+                        ->where('usuario_id','=',request('cuenta_origen_id'))
+                        ->value(\Illuminate\Support\Facades\DB::raw('max(linea) as linea'));
+
+
+      $saldo = DB::table('cuenta_corriente')
+                              ->where('usuario_id','=',request('cuenta_origen_id'))
+                              ->where('linea',$linea)
+                              ->value('saldo');
+      $monto = request('monto');
+
+
+      if ( request('tipo_movimiento') == 'transferencia' ){
+          $datos = $request->all();
+          $datos['saldo'] =  $saldo - $monto;
+          Validator::make($datos, [
+              'saldo' => [
+                  'numeric',
+                  'min:0',
+              ],
+          ],
+          [
+            'saldo.min' => 'Saldo insuficiente'
+          ])->validate();
+
+          $cuentacorriente_egreso = CuentaCorriente::Create([
+            'usuario_id' => request('cuenta_origen_id'),
+            'linea' => $linea + 1,
+            'usuario_id_destino' => request('cuenta_destino_id'),
+            'tipo_movimiento' => 'transferencia',
+            'saldo' => $saldo - $monto,
+            'monto' => $monto * -1,
+            'audi_usuario_id' => \Auth::id(),
+            'comentarios' => request('comentarios')
+          ]);
+
+          $linea = DB::table('cuenta_corriente')
+                          //  ->select(\Illuminate\Support\Facades\DB::raw('max(linea) as linea'))
+                            ->groupby('usuario_id')
+                            ->where('usuario_id','=',request('cuenta_destino_id'))
+                            ->value(\Illuminate\Support\Facades\DB::raw('max(linea) as linea'));
+
+
+          $saldo = DB::table('cuenta_corriente')
+                                  ->where('usuario_id','=',request('cuenta_destino_id'))
+                                  ->where('linea',$linea)
+                                  ->value('saldo');
+          $monto = request('monto');
+
+          $cuentacorriente_ingreso = CuentaCorriente::Create([
+            'usuario_id' => request('cuenta_destino_id'),
+            'linea' => $linea + 1,
+            'usuario_id_origen' => request('cuenta_origen_id'),
+            'tipo_movimiento' => 'transferencia',
+            'saldo' => $saldo + $monto,
+            'monto' => $monto,
+            'audi_usuario_id' => \Auth::id(),
+            'comentarios' => request('comentarios')
+          ]);
+      }
+
+      if ( request('tipo_movimiento') == 'deposito' ){
+
+        $linea = DB::table('cuenta_corriente')
+                          ->groupby('usuario_id')
+                          ->where('usuario_id','=',request('cuenta_origen_id'))
+                          ->value(DB::raw('max(linea) as linea'));
+
+        $linea = $linea ? $linea: 0 ;
+
+        $saldo = DB::table('cuenta_corriente')
+                                ->where('usuario_id','=',request('cuenta_origen_id'))
+                                ->where('linea',$linea)
+                                ->value('saldo');
+        $saldo = $saldo ? $saldo : 0 ;
+
+        $monto = request('monto');
+
+        $cuentacorriente_ingreso = CuentaCorriente::Create([
+          'usuario_id' => request('cuenta_origen_id'),
+          'linea' => $linea + 1,
+          'tipo_movimiento' => request('tipo_movimiento'),
+          'saldo' => $saldo + $monto,
+          'monto' => $monto,
+          'audi_usuario_id' => \Auth::id(),
+          'comentarios' => request('comentarios')
+        ]);
+      }
+
+      if ( request('tipo_movimiento') == 'extraccion' ){
+
+        $linea = DB::table('cuenta_corriente')
+                          ->groupby('usuario_id')
+                          ->where('usuario_id','=',request('cuenta_origen_id'))
+                          ->value(DB::raw('max(linea) as linea'));
+
+        $linea = $linea ? $linea: 0 ;
+
+        $saldo = DB::table('cuenta_corriente')
+                                ->where('usuario_id','=',request('cuenta_origen_id'))
+                                ->where('linea',$linea)
+                                ->value('saldo');
+        $saldo = $saldo ? $saldo : 0 ;
+
+        $monto = request('monto');
+
+        $datos = $request->all();
+        $datos['saldo'] =  $saldo - $monto;
+        Validator::make($datos, [
+            'saldo' => [
+                'numeric',
+                'min:0',
+            ],
+        ],
+        [
+          'saldo.min' => 'Saldo insuficiente'
+        ])->validate();
+
+        $cuentacorriente_ingreso = CuentaCorriente::Create([
+          'usuario_id' => request('cuenta_origen_id'),
+          'linea' => $linea + 1,
+          'tipo_movimiento' => request('tipo_movimiento'),
+          'saldo' => $saldo - $monto,
+          'monto' => $monto * -1,
+          'audi_usuario_id' => \Auth::id(),
+          'comentarios' => request('comentarios')
+        ]);
+      }
+
+      return redirect()->route('cuentacorriente.index');
     }
 
     /**
@@ -44,42 +292,45 @@ class CuentaCorrienteController extends Controller
      * @param  \App\CuentaCorriente  $cuentaCorriente
      * @return \Illuminate\Http\Response
      */
-    public function show(CuentaCorriente $cuentaCorriente)
+    public function show($id)
     {
-        //
-    }
+        $linea = DB::table('cuenta_corriente')
+                           ->groupby('usuario_id')
+                           ->where('usuario_id','=',$id)
+                           ->value(DB::raw('max(linea) as linea'));
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\CuentaCorriente  $cuentaCorriente
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(CuentaCorriente $cuentaCorriente)
-    {
-        //
-    }
+        $cuenta = DB::table('cuenta_corriente')
+                           ->join('usuarios','usuarios.id','=', 'cuenta_corriente.usuario_id')
+                           ->where([['linea' ,'=', $linea], ['usuario_id','=',$id]])
+                           ->select('saldo','linea as lineas','usuarios.nombre')
+                           ->get();
+        list($searchby,$search)= $this->getBuscar(request('buscarpor'),request('buscar'));
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\CuentaCorriente  $cuentaCorriente
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, CuentaCorriente $cuentaCorriente)
-    {
-        //
-    }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\CuentaCorriente  $cuentaCorriente
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(CuentaCorriente $cuentaCorriente)
-    {
-        //
+        $query = DB::table(DB::raw('cuenta_corriente cc'))
+                     ->leftJoin(DB::raw('usuarios as u'), 'cc.usuario_id','=','u.id')
+                     ->leftJoin(DB::raw('usuarios as uo'), 'cc.usuario_id_origen','=','uo.id')
+                     ->leftJoin(DB::raw('usuarios as ud'), 'cc.usuario_id_destino','=','ud.id')
+                     ->leftJoin(DB::raw('usuarios as ur'), 'cc.audi_usuario_id','=','ud.id')
+                     ->leftJoin(DB::raw('estaciones as es'), 'cc.estacion_id','=','es.id')
+                 ->select('cc.usuario_id_destino as destino_id','cc.usuario_id_origen as origen_id','cc.linea','u.nombre as cuenta', 'cc.tipo_movimiento', 'cc.saldo',
+                          'cc.monto','cc.created_at as momento','ud.nombre as destino','uo.nombre as origen',
+                          'cc.comentarios', 'ur.nombre as realizado_por', DB::raw('es.codigo + \' - \' + es.nombre as  estacion')
+                          )
+                 ->where('cc.usuario_id',$id)
+                 ->orderby('cc.linea','desc');
+        if ($searchby){
+           $query = $query->where($searchby,'like','%'.$search.'%');
+        }
+
+        $perpage = $this->getPaginacion(request('paginacion'));
+
+        $lineas = $query->paginate($perpage);
+
+        $lineas->appends(['paginacion' => $perpage]);
+        $lineas->appends(['buscarpor' => $searchby]);
+        $lineas->appends(['buscar' => $search]);
+
+        return view('cuentacorriente.detalle',['lineas' => $lineas, 'cuenta' => $cuenta , 'id' => $id]);
     }
 }

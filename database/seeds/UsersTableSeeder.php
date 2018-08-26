@@ -18,7 +18,22 @@ class UsersTableSeeder extends Seeder
         'remember_token' => str_random(10),
         'nombre' => 'Eduardo Jerez',
         'rol' => 'Administrador',
+        'es_cuenta_principal' => false,
+        'cuenta_principal_id' => null,
         ]);
-      factory(App\User::class, 300)->create();
+
+      factory(App\User::class, 20)->create([
+        'es_cuenta_principal' => true,
+        'cuenta_principal_id' => null,
+      ])
+      ->each(function ($u) {
+        $rand =  rand ( 3, 15 );
+        for ($i=0;$i < $rand ;$i++){
+          factory(App\User::class)->create([
+            'cuenta_principal_id' => $u->id,
+            'es_cuenta_principal' => false,
+          ]);
+        }
+      });
     }
 }

@@ -40,6 +40,9 @@
                       <li class="nav-item">
                           <a class="nav-link" href="{{ url('consumo') }}">{{ __('Consumo') }}</a>
                       </li>
+                      <li class="nav-item">
+                          <a class="nav-link" href="{{ url('cuentacorriente') }}">{{ __('Cta. Cte.') }}</a>
+                      </li>
                     </ul>
 
                     <!-- Right Side Of Navbar -->
@@ -59,7 +62,7 @@
                                     <a class="dropdown-item" href="{{ route('logout') }}"
                                        onclick="event.preventDefault();
                                                      document.getElementById('logout-form').submit();">
-                                        {{ __('Logout') }}
+                                        {{ __('Cerrar Sesión') }}
                                     </a>
 
                                     <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">

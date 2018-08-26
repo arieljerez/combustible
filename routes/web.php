@@ -12,16 +12,21 @@
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect('login');
 });
 
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
 Route::resource('usuarios', 'UsuarioController');
-Route::resource('carga', 'CargaController');
 Route::resource('consumo', 'ConsumoController');
 Route::get('consumo/ingresar/{id}', 'ConsumoController@ingresar');
 Route::post('consumo/validar/{id}', 'ConsumoController@validar');
 Route::get('consumo/verificarusuario/{id}/{monto}', 'ConsumoController@verificarusuario');
 Route::post('consumo/grabar/{id}/{monto}', 'ConsumoController@grabar');
+
+Route::resource('cuentacorriente', 'CuentaCorrienteController');
+Route::get('cuentacorriente/transferir/{id}', 'CuentaCorrienteController@transferir');
+Route::get('cuentacorriente/iniciar/{id}', 'CuentaCorrienteController@iniciar');
+Route::get('cuentacorriente/depositar/{id}', 'CuentaCorrienteController@depositar');
+Route::get('cuentacorriente/extraer/{id}', 'CuentaCorrienteController@extraer');
