@@ -34,28 +34,35 @@
                   <table class="table table-striped table-condensed">
                     <thead>
                         <th>Linea</th>
-                        <th>Origen</th>
-                        <th>Destino</th>
-                        <th>Tipo Movimiento</th>
+                        <th>Fecha</th>
                         <th>Saldo</th>
                         <th>Monto</th>
-
+                        <th>Origen/Destino</th>
+                        <th>Tipo Movimiento</th>
+                        <th>Estacion</th>
+                        <th>Consumidor</th>
+                        <th>Comentarios</th>
                     </thead>
                     <tbody>
                         @foreach( $lineas as $linea)
                           <tr>
                               <td>
                                 <p class="h4">{{ $linea->linea }}</p>
-                                <small>{{ $linea->comentarios }}</small>
                               </td>
+                              <td>
+                              <p>
+                                {{ \Carbon\Carbon::parse($linea->fecha)->toDateString() }}
+                              </p>
+                              <small>{{ \Carbon\Carbon::parse($linea->fecha)->toTimeString() }}</small>
+                              </td>
+                              <td>${{ $linea->saldo }}</td>
+                              <td>${{ $linea->monto }}</td>
                               <td>
                                 @empty ($linea->origen )
                                    {{ $linea->origen }}
                                 @else
                                   <a href="{{ url('cuentacorriente',$linea->origen_id) }}"> {{ $linea->origen }}</a>
                                 @endempty
-                              </td>
-                              <td>
                                 @empty ($linea->destino )
                                    {{ $linea->destino }}
                                 @else
@@ -63,8 +70,16 @@
                                 @endempty
                               </td>
                               <td>{{ $linea->tipo_movimiento }}</td>
-                              <td>${{ $linea->saldo }}</td>
-                              <td>${{ $linea->monto }}</td>
+                              <td>
+                                {{ $linea->estacion }}
+                              </td>
+
+                              <td>
+                                {{ $linea->consumidor }}
+                              </td>
+                              <td>
+                                {{ $linea->comentarios }}
+                              </td>
                           </tr>
                         @endforeach
                     </tbody>

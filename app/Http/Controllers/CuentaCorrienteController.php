@@ -7,6 +7,7 @@ use App\CuentaCorriente;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB as DB;
 use App\User;
+use Maatwebsite\Excel\Facades\Excel;
 
 class CuentaCorrienteController extends Controller
 {
@@ -313,9 +314,10 @@ class CuentaCorrienteController extends Controller
                      ->leftJoin(DB::raw('usuarios as ud'), 'cc.usuario_id_destino','=','ud.id')
                      ->leftJoin(DB::raw('usuarios as ur'), 'cc.audi_usuario_id','=','ud.id')
                      ->leftJoin(DB::raw('estaciones as es'), 'cc.estacion_id','=','es.id')
+                     ->leftJoin(DB::raw('usuarios as co'), 'cc.usuario_id_consumidor','=','co.id')
                  ->select('cc.usuario_id_destino as destino_id','cc.usuario_id_origen as origen_id','cc.linea','u.nombre as cuenta', 'cc.tipo_movimiento', 'cc.saldo',
                           'cc.monto','cc.created_at as momento','ud.nombre as destino','uo.nombre as origen',
-                          'cc.comentarios', 'ur.nombre as realizado_por', DB::raw('es.codigo + \' - \' + es.nombre as  estacion')
+                          'cc.comentarios', 'ur.nombre as realizado_por', 'es.nombre as estacion', 'co.nombre as consumidor', 'cc.created_at as fecha'
                           )
                  ->where('cc.usuario_id',$id)
                  ->orderby('cc.linea','desc');
@@ -327,6 +329,20 @@ class CuentaCorrienteController extends Controller
         }
         if (request('fecha_hasta')){
           $query = $query->where('cc.created_at','<=',request('fecha_hasta'));
+        }
+
+        if (request('excel')){
+          $query = $query->select('cc.linea','u.nombre as cuenta', 'cc.tipo_movimiento', 'cc.saldo',
+                   'cc.monto','cc.created_at as momento','ud.nombre as destino','uo.nombre as origen',
+                   'cc.comentarios', 'ur.nombre as realizado_por', 'es.nombre as estacion', 'co.nombre as consumidor', 'cc.created_at as fecha'
+                 );
+          $datos = json_decode( json_encode($query->get()), true);
+          Excel::create('CuentaDetalle', function($excel) use($datos){
+                $excel->sheet('Excelsheet', function($sheet) use($datos){
+                    $sheet->with($datos, null, 'A1', true);
+                    $sheet->setOrientation('landscape');
+                });
+            })->download('xlsx');
         }
         $perpage = $this->getPaginacion(request('paginacion'));
 
