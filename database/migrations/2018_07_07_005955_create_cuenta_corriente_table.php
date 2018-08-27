@@ -46,6 +46,9 @@ class CreateCuentaCorrienteTable extends Migration
         DB::statement('ALTER TABLE `cuenta_corriente`
 	                    CHANGE COLUMN `usuario_id_consumidor` `usuario_id_consumidor` INT(10) UNSIGNED NULL AFTER `estacion_id`;
                       ');
+        DB::statement('ALTER TABLE `cuenta_corriente`
+              	CHANGE COLUMN `comentarios` `comentarios` VARCHAR(200) NULL DEFAULT \'\' COLLATE \'utf8_unicode_ci\' AFTER `usuario_id_consumidor`
+                ');
     }
 
     /**

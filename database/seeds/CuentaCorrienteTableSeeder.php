@@ -32,10 +32,11 @@ class CuentaCorrienteTableSeeder extends Seeder
               'audi_usuario_id' => 1
             ]);
         }
+                sleep(2);
 // consumo
-        $cuentas = App\User::where('es_cuenta_principal',true)->get();
+        $cuentas_principales = App\User::where('es_cuenta_principal',true)->get();
 
-        foreach ($cuentas as $cuenta) {
+        foreach ($cuentas_principales as $cuenta) {
 
           $cuenta_saldo = DB::table('cuenta_corriente')->where('usuario_id',$cuenta->id)
               ->latest()
@@ -52,67 +53,59 @@ class CuentaCorrienteTableSeeder extends Seeder
               'saldo' => $cuenta_saldo - 2000,
               'monto'=> -2000,
               'audi_usuario_id' => 1,
-              'usuario_id_consumidor' =>  DB::table('usuarios')->where('rol','usuario')->inRandomOrder()->value('id')
+              'usuario_id_consumidor' =>  DB::table('usuarios')->where([['rol','usuario'],['cuenta_principal_id',$cuenta->id]])->inRandomOrder()->value('id')
             ]);
         }
+sleep(2);
+//
 //transferencia
-        $cuentas = App\User::where('es_cuenta_principal',true)->get();
+//
+       $cuentas = App\User::where('es_cuenta_principal',true)->get();
 
         foreach ($cuentas as $cuenta) {
-            $cuenta_destino = DB::table('usuarios')
-                ->where([
-                  ['es_cuenta_principal','=','usuario'],
-                  ['es_cuenta_principal','=',false]
-                ])
+
+            // cuenta destino, cualquier otra principal
+            $usuario_destino = DB::table('usuarios')->where([['es_cuenta_principal','=',true]])
                 ->inRandomOrder()->first();
-            $cuenta_destino_saldo = DB::table('cuenta_corriente')->where('usuario_id',$cuenta_destino->id)
-                ->latest()
-                ->value('saldo');
-            $cuenta_origen_saldo = DB::table('cuenta_corriente')->where('usuario_id',$cuenta->id)
+
+            $cuenta_destino = DB::table('cuenta_corriente')->where('usuario_id',$usuario_destino->id)
                     ->latest()
-                    ->value('saldo');
+                    ->first();
+
+            $cuenta_origen = DB::table('cuenta_corriente')->where('usuario_id',$cuenta->id)
+                    ->latest()
+                    ->first();
           // egreso
             App\CuentaCorriente::create([
-              'usuario_id' => $cuenta->id,
-              'linea' => 3,
-              'usuario_id_destino' => $cuenta_destino->id,
+              'usuario_id' => $cuenta_origen->usuario_id,
+              'linea' =>  $cuenta_origen->linea + 1,
+              'usuario_id_destino' => $cuenta_destino->usuario_id,
               'usuario_id_origen' => null,
               'estacion_id' => null,
-              'comentarios' => 'Por Transferencia a : '. $cuenta_destino->nombre,
+              'comentarios' => 'Egreso por Transferencia a : '. $cuenta_destino->usuario_id,
               'tipo_movimiento' => 'transferencia',
-              'saldo' => $cuenta_origen_saldo - 4000,
+              'saldo' => $cuenta_origen->saldo - 4000,
               'monto'=> -4000,
               'audi_usuario_id' => 1,
               'usuario_id_consumidor' =>  null
             ]);
           //ingreso
             App\CuentaCorriente::create([
-              'usuario_id' => $cuenta_destino->id,
-              'linea' => 3,
+              'usuario_id' => $cuenta_destino->usuario_id,
+              'linea' => $cuenta_destino->linea + 1,
               'usuario_id_destino' => null,
-              'usuario_id_origen' => $cuenta->id,
+              'usuario_id_origen' => $cuenta_origen->usuario_id,
               'estacion_id' => null,
-              'comentarios' => 'Por Transferencia de : '. $cuenta->nombre,
+              'comentarios' => 'Ingreso por Transferencia de : '. $cuenta_origen->usuario_id,
               'tipo_movimiento' => 'transferencia',
-              'saldo' => $cuenta_destino_saldo + 4000,
+              'saldo' => $cuenta_destino->saldo + 4000,
               'monto'=> 4000,
               'audi_usuario_id' => 1,
               'usuario_id_consumidor' =>  null
             ]);
         }
 
-        /*
-        $table->integer('usuario_id')->unsigned();
-        $table->integer('linea')->unsigned()->default(1);
-        $table->integer('usuario_id_destino')->nulleable()->unsigned();
-        $table->integer('usuario_id_origen')->nulleable()->unsigned();
-        $table->integer('estacion_id')->unsigned()->nulleable();
-        $table->string('comentarios',200)->default('');
-        $table->enum('tipo_movimiento',['transferencia','consumo','deposito','extraccion']);
-        $table->double('saldo', 8, 2)->default(0);
-        $table->double('monto', 8, 2)->default(0);
-        $table->integer('audi_usuario_id')->unsigned();
-         */
+
 
     }
 }

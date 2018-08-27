@@ -14,7 +14,15 @@
       @component('components.combo_paginacion')
       @endcomponent
     </div>
-
+    <div class="input-group-append col-md-3 mb-3">
+      <div class="input-group-prepend">
+        <div class="input-group-text">
+          <i class="fas fa-calendar-alt"></i>
+        </div>
+      </div>
+      <input type="date" name="fecha_desde" class="form-control" placeholder="Fecha Desde" value="{{request('fecha_desde')}}"/>
+      <input type="date" name="fecha_hasta" class="form-control" placeholder="Fecha Hasta" value="{{request('fecha_hasta')}}">
+    </div>
   </div>
   <div class="row">
     <div class="col-md-4">

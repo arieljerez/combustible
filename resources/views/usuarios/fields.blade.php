@@ -88,3 +88,23 @@
         </select>
     </div>
 </div>
+
+<div class="form-group row">
+    <label for="cuenta_principal" class="col-md-4 col-form-label text-md-right">{{ __('Estación') }}</label>
+
+    <div class="col-md-6">
+        @php
+          $estaciones = \DB::Table('estaciones')->get();
+        @endphp
+        <select id="estacion_id" name="estacion_id" class="form-control">
+          <option value=""  {{ old('estacion_id',$usuario->estacion_id) == '' ? 'selected': '' }} >
+            Seleccione una Estación
+          </option>
+          @foreach($estaciones as $estacion)
+          <option value="{{ $estacion->id }}" {{ old('estacion_id',$usuario->estacion_id) == $estacion->id ? 'selected': '' }}>
+            {{ $estacion->nombre }}
+          </option>
+          @endforeach
+        </select>
+    </div>
+</div>

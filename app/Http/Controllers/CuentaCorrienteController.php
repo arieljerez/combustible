@@ -322,7 +322,12 @@ class CuentaCorrienteController extends Controller
         if ($searchby){
            $query = $query->where($searchby,'like','%'.$search.'%');
         }
-
+        if (request('fecha_desde')){
+          $query = $query->where('cc.created_at','>=',request('fecha_desde'));
+        }
+        if (request('fecha_hasta')){
+          $query = $query->where('cc.created_at','<=',request('fecha_hasta'));
+        }
         $perpage = $this->getPaginacion(request('paginacion'));
 
         $lineas = $query->paginate($perpage);
@@ -330,6 +335,9 @@ class CuentaCorrienteController extends Controller
         $lineas->appends(['paginacion' => $perpage]);
         $lineas->appends(['buscarpor' => $searchby]);
         $lineas->appends(['buscar' => $search]);
+        $lineas->appends(['fecha_hasta' => request('fecha_hasta')]);
+        $lineas->appends(['fecha_desde' => request('fecha_desde')]);
+
 
         return view('cuentacorriente.detalle',['lineas' => $lineas, 'cuenta' => $cuenta , 'id' => $id]);
     }
