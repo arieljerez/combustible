@@ -25,6 +25,7 @@
                         <th>DNI</th>
                         <th>Nombre</th>
                         <th>Rol</th>
+                        <th>Cuenta</th>
                         <th>Acciones</th>
                     </thead>
                     <tbody>
@@ -32,13 +33,14 @@
                           <tr>
                               <td>
                                 <p class="h4">{{ $usuario->dni }}</p>
-                                <small>Registro: {{ $usuario->created_at->format('d/m/Y') }}</small>
+                                <small>Registro: {{ $usuario->created_at }}</small>
                               </td>
                               <td>{{ $usuario->nombre }}
                                 <p>
                                   <small>{{ $usuario->email }}</small>
                                 </p></td>
                               <td>{{ $usuario->rol }}</td>
+                              <td>{{ $usuario->cuenta }}</td>
                               <td>
                                   <action-icons url="{{ url('usuarios') }}" :id="{{ $usuario->id }}" token="{{ csrf_token() }}"></action-icons>
                               </td>

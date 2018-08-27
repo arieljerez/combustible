@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\User;
+use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\DB as DB;
 
 class UsuarioController extends Controller
 {
@@ -18,15 +20,32 @@ class UsuarioController extends Controller
       list($searchby,$search)= $this->getBuscar(request('buscarpor'),request('buscar'));
 
       $rol =  $this->getRol(request('rol'));
-      $query = User::orderby($orderby,'ASC');
+    //  $query = DB::table ('usuarios')User::orderby($orderby,'ASC');
+
+      $query = DB::table(DB::raw('usuarios u'))
+                   ->leftJoin(DB::raw('usuarios as cp'), 'cp.id','=','u.cuenta_principal_id')
+                   ->orderby('u.'.$orderby,'ASC')
+                   ->select ('u.dni as dni','u.nombre','u.rol','u.created_at','u.email','u.id','cp.nombre as cuenta');
 
       if ($searchby){
         $query = $query->where($searchby,'like','%'.$search.'%');
       }
 
       if($rol){
-        $query = $query->where('rol',$rol);
+        $query = $query->where('u.rol',$rol);
       }
+
+      if (request('excel')){
+        $query = $query->select('u.dni as DNI','u.nombre as Nombre','u.rol','u.created_at as Registro','u.email as Correo-e','cp.nombre as cuenta');
+        $datos = json_decode( json_encode($query->get()), true);
+        Excel::create('Usuarios', function($excel) use($datos){
+              $excel->sheet('Excelsheet', function($sheet) use($datos){
+                  $sheet->with($datos, null, 'A1', true);
+                  $sheet->setOrientation('landscape');
+              });
+          })->download('xlsx');
+      }
+
       $perpage = $this->getPaginacion(request('paginacion'));
 
       $usuarios = $query->paginate($perpage);

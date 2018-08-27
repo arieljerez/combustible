@@ -28,7 +28,7 @@
     <div class="col-md-4">
         <button type="submit" class="btn btn-info"> <i class="fas fa-search"></i> Buscar</button>
         <a href="{{ url('cuentacorriente',$id) }}" class="btn btn-info"> <i class="fas fa-eraser"></i> Limpiar</a>
-        <a href="{{ request()->fullUrl().'&excel=true' }}" class="btn btn-success"> <i class="fas fa-file-excel"></i> Excel</a>
+        @include('components.button_excel')
     </div>
   </div>
 </form>

@@ -35,6 +35,7 @@
     <div class="col-md-4">
         <button type="submit" class="btn btn-info"> <i class="fas fa-search"></i> Buscar</button>
         <a href="{{ url('cuentacorriente') }}" class="btn btn-info"> <i class="fas fa-eraser"></i> Limpiar</a>
+        @include('components.button_excel')
     </div>
   </div>
 </form>

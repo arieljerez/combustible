@@ -37,6 +37,17 @@ class CuentaCorrienteController extends Controller
                 $query = $query->where($searchby,'like','%'.$search.'%');
               }
 
+              if (request('excel')){
+                $query = $query->select('usuarios.nombre as cuenta', 'cuenta_corriente.linea as lineas', 'cuenta_corriente.saldo as saldo'
+                       );
+                $datos = json_decode( json_encode($query->get()), true);
+                Excel::create('Cuentas', function($excel) use($datos){
+                      $excel->sheet('Excelsheet', function($sheet) use($datos){
+                          $sheet->with($datos, null, 'A1', true);
+                          $sheet->setOrientation('landscape');
+                      });
+                  })->download('xlsx');
+              }
               $perpage = $this->getPaginacion(request('paginacion'));
 
               $cc = $query->paginate($perpage);
