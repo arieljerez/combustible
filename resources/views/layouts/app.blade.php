@@ -19,10 +19,140 @@
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <link href="https://work.smarchal.com/twbscolor/4.0.0/css/051a300d72c3ecf0f1ecdbff0" rel="stylesheet" type="text/css" />
 </head>
+    <style type="text/css">
+    .navbar {
+      background-color: #051a30;
+    }
+    .navbar .navbar-brand {
+      color: #ecf0f1;
+    }
+    .navbar .navbar-brand:hover,
+    .navbar .navbar-brand:focus {
+      color: #ecdbff;
+    }
+    .navbar .navbar-text {
+      color: #ecf0f1;
+    }
+    .navbar .navbar-text a {
+      color: #ecdbff;
+    }
+    .navbar .navbar-text a:hover,
+    .navbar .navbar-text a:focus {
+      color: #ecdbff;
+    }
+    .navbar .navbar-nav .nav-link {
+      color: #ecf0f1;
+      border-radius: .25rem;
+      margin: 0 0.25em;
+    }
+    .navbar .navbar-nav .nav-link:not(.disabled):hover,
+    .navbar .navbar-nav .nav-link:not(.disabled):focus {
+      color: #ecdbff;
+    }
+    .navbar .navbar-nav .nav-item.active .nav-link,
+    .navbar .navbar-nav .nav-item.active .nav-link:hover,
+    .navbar .navbar-nav .nav-item.active .nav-link:focus,
+    .navbar .navbar-nav .nav-item.show .nav-link,
+    .navbar .navbar-nav .nav-item.show .nav-link:hover,
+    .navbar .navbar-nav .nav-item.show .nav-link:focus {
+      color: #ecdbff;
+      background-color: #0d72c3;
+    }
+    .navbar .navbar-toggle {
+      border-color: #0d72c3;
+    }
+    .navbar .navbar-toggle:hover,
+    .navbar .navbar-toggle:focus {
+      background-color: #0d72c3;
+    }
+    .navbar .navbar-toggle .navbar-toggler-icon {
+      color: #ecf0f1;
+    }
+    .navbar .navbar-collapse,
+    .navbar .navbar-form {
+      border-color: #ecf0f1;
+    }
+    .navbar .navbar-link {
+      color: #ecf0f1;
+    }
+    .navbar .navbar-link:hover {
+      color: #ecdbff;
+    }
+
+    @media (max-width: 575px) {
+      .navbar-expand-sm .navbar-nav .show .dropdown-menu .dropdown-item {
+        color: #ecf0f1;
+      }
+      .navbar-expand-sm .navbar-nav .show .dropdown-menu .dropdown-item:hover,
+      .navbar-expand-sm .navbar-nav .show .dropdown-menu .dropdown-item:focus {
+        color: #ecdbff;
+      }
+      .navbar-expand-sm .navbar-nav .show .dropdown-menu .dropdown-item.active {
+        color: #ecdbff;
+        background-color: #0d72c3;
+      }
+    }
+
+    @media (max-width: 767px) {
+      .navbar-expand-md .navbar-nav .show .dropdown-menu .dropdown-item {
+        color: #ecf0f1;
+      }
+      .navbar-expand-md .navbar-nav .show .dropdown-menu .dropdown-item:hover,
+      .navbar-expand-md .navbar-nav .show .dropdown-menu .dropdown-item:focus {
+        color: #ecdbff;
+      }
+      .navbar-expand-md .navbar-nav .show .dropdown-menu .dropdown-item.active {
+        color: #ecdbff;
+        background-color: #0d72c3;
+      }
+    }
+
+    @media (max-width: 991px) {
+      .navbar-expand-lg .navbar-nav .show .dropdown-menu .dropdown-item {
+        color: #ecf0f1;
+      }
+      .navbar-expand-lg .navbar-nav .show .dropdown-menu .dropdown-item:hover,
+      .navbar-expand-lg .navbar-nav .show .dropdown-menu .dropdown-item:focus {
+        color: #ecdbff;
+      }
+      .navbar-expand-lg .navbar-nav .show .dropdown-menu .dropdown-item.active {
+        color: #ecdbff;
+        background-color: #0d72c3;
+      }
+    }
+
+    @media (max-width: 1199px) {
+      .navbar-expand-xl .navbar-nav .show .dropdown-menu .dropdown-item {
+        color: #ecf0f1;
+      }
+      .navbar-expand-xl .navbar-nav .show .dropdown-menu .dropdown-item:hover,
+      .navbar-expand-xl .navbar-nav .show .dropdown-menu .dropdown-item:focus {
+        color: #ecdbff;
+      }
+      .navbar-expand-xl .navbar-nav .show .dropdown-menu .dropdown-item.active {
+        color: #ecdbff;
+        background-color: #0d72c3;
+      }
+    }
+
+    .navbar-expand .navbar-nav .show .dropdown-menu .dropdown-item {
+      color: #ecf0f1;
+    }
+    .navbar-expand .navbar-nav .show .dropdown-menu .dropdown-item:hover,
+    .navbar-expand .navbar-nav .show .dropdown-menu .dropdown-item:focus {
+      color: #ecdbff;
+    }
+    .navbar-expand .navbar-nav .show .dropdown-menu .dropdown-item.active {
+      color: #ecdbff;
+      background-color: #0d72c3;
+    }
+    </style>
+
 <body>
     <div id="app">
-        <nav class="navbar navbar-expand-md navbar-light navbar-laravel">
+        <nav class="navbar navbar-expand-md navbar-light navbar-laravel menuAzul sombra transition">
             <div class="container">
                 <a class="navbar-brand" href="{{ url('/') }}">
                     {{ config('app.name', 'Laravel') }}
@@ -33,6 +163,9 @@
 
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <!-- Left Side Of Navbar -->
+
+                    @guest
+                    @else
                     <ul class="navbar-nav mr-auto">
                       <li class="nav-item">
                           <a class="nav-link" href="{{ url('usuarios') }}">{{ __('Usuarios') }}</a>
@@ -44,7 +177,7 @@
                           <a class="nav-link" href="{{ url('cuentacorriente') }}">{{ __('Cta. Cte.') }}</a>
                       </li>
                     </ul>
-
+                    @endguest
                     <!-- Right Side Of Navbar -->
                     <ul class="navbar-nav ml-auto">
                         <!-- Authentication Links -->
