@@ -167,14 +167,17 @@
                     @guest
                     @else
                     <ul class="navbar-nav mr-auto">
+                      @if(Auth()->user()->rol == 'administrador')
                       <li class="nav-item">
                           <a class="nav-link" href="{{ url('usuarios') }}">{{ __('Usuarios') }}</a>
                       </li>
-                      <li class="nav-item">
-                          <a class="nav-link" href="{{ url('consumo') }}">{{ __('Consumo') }}</a>
-                      </li>
+
                       <li class="nav-item">
                           <a class="nav-link" href="{{ url('cuentacorriente') }}">{{ __('Cta. Cte.') }}</a>
+                      </li>
+                      @endif
+                      <li class="nav-item">
+                          <a class="nav-link" href="{{ url('consumo') }}">{{ __('Consumo') }}</a>
                       </li>
                     </ul>
                     @endguest
