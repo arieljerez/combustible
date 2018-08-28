@@ -71,11 +71,15 @@ class ConsumoController extends Controller
     public function grabar($id,$monto)
     {
       $pin = request('pin');
-
-      if (\Auth::attempt(['id' => $id, 'password' => $pin])) {
-        return back()->withErrors(['pin' => 'PIN incorrecto']);
+      $user = User::find($id);
+      if (!\Hash::check($pin, $user->password)) {
+          return back()->withErrors(['pin' => 'PIN incorrecto']);
       }
-
+      /*
+        if (\Auth::attempt(['id' => $id, 'password' => $pin])) {
+          return back()->withErrors(['pin' => 'PIN incorrecto']);
+        }
+      */
       $cuenta_principal_id =  User::where('id',$id)->value('cuenta_principal_id');
       // grabar Consumo
       //

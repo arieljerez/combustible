@@ -20,9 +20,8 @@ class UsuarioController extends Controller
       list($searchby,$search)= $this->getBuscar(request('buscarpor'),request('buscar'));
 
       $rol =  $this->getRol(request('rol'));
-    //  $query = DB::table ('usuarios')User::orderby($orderby,'ASC');
 
-      $query = DB::table(DB::raw('usuarios u'))
+      $query = DB::table(DB::raw('usuarios as u'))
                    ->leftJoin(DB::raw('usuarios as cp'), 'cp.id','=','u.cuenta_principal_id')
                    ->orderby('u.'.$orderby,'ASC')
                    ->select ('u.dni as dni','u.nombre','u.rol','u.created_at','u.email','u.id','cp.nombre as cuenta');
@@ -86,13 +85,13 @@ class UsuarioController extends Controller
   public function getBuscar($searchby,$search)
   {
       if ($searchby =='dni'){
-        return ['dni',$search];
+        return ['u.dni',$search];
       }
       if ($searchby =='email'){
-        return ['email',$search];
+        return ['u.email',$search];
       }
       if ($searchby =='nombre'){
-        return ['nombre',$search];
+        return ['u.nombre',$search];
       }
       return '';
   }
@@ -105,7 +104,7 @@ class UsuarioController extends Controller
         return 'email';
       }
       if($orderby == 'nombre'){
-        return 'nombre';
+        return 'u.nombre';
       }
 
       if($orderby == 'created_at'){
