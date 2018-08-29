@@ -136,23 +136,31 @@ class UsuarioController extends Controller
       'email' => 'required|unique:usuarios,email',
       'password' => 'required|confirmed',
       'nombre' => 'required',
-      'rol' => 'required'
+      'rol' => 'required',
+      'es_cuenta_principal' => 'nullable',
+      'cuenta_principal_id' => 'nullable',
+      'comentarios' => 'nullable',
+      'estacion_id' => 'nullable'
     ], [
       'dni.required' => 'El campo DNI es obligatorio'
     ]);
 
     if (!empty($data['es_cuenta_principal'])){
-      $data['rol'] = 'cuenta principal';
+      $data['rol'] = 'cuenta_principal';
     }
-
-    User::create([
+    $data['password']= bcrypt($data['password']);
+    User::create($data);
+    /*User::create([
       'dni' => $data['dni'],
       'email' => $data['email'],
       'password' => bcrypt($data['password']),
       'rol' => $data['rol'],
-      'nombre' => $data['nombre']
-    ]);
-
+      'nombre' => $data['nombre'],
+      'comentarios' => $data['comentarios'],
+      'estacion_id' => $data['estacion_id'],
+      'cuenta_principal_id' =>  $data['cuenta_principal_id'],
+      'es_cuenta_principal' =>  $data['es_cuenta_principal'],
+    ]);*/
     return redirect()->route('usuarios.index');
   }
 
@@ -192,19 +200,22 @@ class UsuarioController extends Controller
               'email' => 'nullable',
               'password' => 'nullable',
               'nombre' => 'required',
-              'rol' => 'required'
+              'rol' => 'required',
+              'es_cuenta_principal' => 'nullable',
+              'cuenta_principal_id' => 'nullable',
+              'comentarios' => 'nullable',
+              'estacion_id' => 'nullable'
       ]);
-
       if ($data['password'] != null) {
           $data['password'] = bcrypt($data['password']);
       } else {
           unset($data['password']);
       }
       if (!empty($data['es_cuenta_principal'])){
-        $data['rol'] = 'cuenta principal';
+        $data['rol'] = 'cuenta_principal';
       }
       $usuario->update($data);
-      return redirect()->route('usuarios.index', ['usuario' => $usuario]);
+      return redirect()->route('usuarios.index');
   }
 
   /**
@@ -215,6 +226,12 @@ class UsuarioController extends Controller
    */
   public function destroy($id)
   {
-      //
+     try {
+       User::destroy($id);
+       return redirect()->route('usuarios.index')->with('delete_ok','Registro eliminado');
+    }catch (\Illuminate\Database\QueryException $e){
+       return redirect()->route('usuarios.index')->with('delete_fail','No se pudo eliminar la cuenta');
+    }
+
   }
 }

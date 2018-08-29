@@ -65,7 +65,7 @@
     <label for="es_cuenta_principal" class="col-md-4 col-form-label text-md-right">{{ __('Es Cuenta /c principal ') }}</label>
 
     <div class="col-md-1">
-        <input id="es_cuenta_principal" type="checkbox" class="form-control" name="es_cuenta_principal" value="{{ old('es_cuenta_principal',$usuario->es_cuenta_principal) }}" {{ old('es_cuenta_principal',$usuario->es_cuenta_principal) == 1? 'checked': '' }} >
+        <input id="es_cuenta_principal" type="checkbox" class="form-control" name="es_cuenta_principal" value="1" {{ old('es_cuenta_principal',$usuario->es_cuenta_principal) == 1? 'checked': '' }} >
     </div>
 </div>
 
@@ -88,7 +88,18 @@
         </select>
     </div>
 </div>
+<div class="form-group row">
+  <label for="name" class="col-md-4 col-form-label text-md-right">{{ __('Comentarios') }}</label>
 
+  <div class="col-md-6">
+      <textarea id="comentarios" class="form-control{{ $errors->has('comentarios') ? ' is-invalid' : '' }}" name="comentarios">{{ old('comentarios',$usuario->comentarios) }}</textarea>
+  </div>
+  @if ($errors->has('comentarios'))
+      <span class="invalid-feedback" role="alert">
+          <strong>{{ $errors->first('comentarios') }}</strong>
+      </span>
+  @endif
+</div>
 <div class="form-group row">
     <label for="cuenta_principal" class="col-md-4 col-form-label text-md-right">{{ __('Estación') }}</label>
 

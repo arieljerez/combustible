@@ -4,6 +4,19 @@
           <div class="card card-default">
               <div class="card-header">Usuarios</div>
               <div class="card-body">
+
+                @if (session('delete_ok'))
+                  <div class="alert alert-success">
+                      {{ session('delete_ok') }}
+                  </div>
+                @endif
+
+                @if (session('delete_fail'))
+                  <div class="alert alert-danger">
+                      {{ session('delete_fail') }}
+                  </div>
+                @endif
+
                 <div class="row">
                   <div class="col-md-6 mb-3">
                     <a href="{{url('usuarios/create')}}" class="btn btn-primary"><i class="fas fa-plus"></i> Nuevo Usuario</a>
