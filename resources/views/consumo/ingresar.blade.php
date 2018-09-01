@@ -31,7 +31,7 @@
                             $
                           </div>
                         </div>
-                        <input type="number" step=".01" name="monto" id="monto" class="form-control{{ $errors->has('saldo') ? ' is-invalid' : '' }}" value="{{ old('monto') }}" required>
+                        <input type="number" min="0" step=".01" name="monto" id="monto" class="form-control{{ $errors->has('saldo') ? ' is-invalid' : '' }}" value="{{ old('monto') }}" required>
                       </div>
                     </div>
                     <div class="row justify-content-center">

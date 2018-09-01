@@ -39,7 +39,7 @@ class ReporteController extends Controller
                    ->leftJoin(DB::raw('usuarios as co'), 'cc.usuario_id_consumidor','=','co.id')
                ->select('u.nombre as cuenta', 'cc.linea', 'cc.tipo_movimiento', 'cc.saldo',
                         'cc.monto','cc.created_at as momento','cc.comentarios',
-                        'ur.nombre as expendedor', 'es.nombre as estacion',
+                        'ur.nombre as expendedor', 'es.nombre as estacion', 'es.empresa',
                         'co.nombre as consumidor', 'cc.created_at as fecha'
                         )
                ->where('cc.estacion_id',request('estacion_id'))

@@ -51,7 +51,7 @@
                         <label for="name" class="col-md-4 col-form-label text-md-right">{{ __('Monto') }}</label>
 
                         <div class="col-md-6">
-                            <input id="monto" type="number" class="form-control{{ $errors->has('monto') || $errors->first('saldo')  ? ' is-invalid' : '' }}" name="monto" value="{{ old('monto') }}" required autofocus>
+                            <input id="monto" min="0" step=".01" type="number" class="form-control{{ $errors->has('monto') || $errors->first('saldo')  ? ' is-invalid' : '' }}" name="monto" value="{{ old('monto') }}" required autofocus>
 
                             @if ($errors->has('monto'))
                                 <span class="invalid-feedback" role="alert">

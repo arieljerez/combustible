@@ -120,7 +120,7 @@ class CuentaCorrienteController extends Controller
     public function transferir($id){
 
       $cuentas = DB::table('usuarios')
-            ->where([['usuarios.rol','<>','playero'],['usuarios.id','<>',$id]])
+            ->where([['usuarios.es_cuenta_principal','=','1'],['usuarios.id','<>',$id]])
             ->select('id','nombre')
             ->get();
       $nombre = User::where('id',$id)->value('nombre');
@@ -136,7 +136,7 @@ class CuentaCorrienteController extends Controller
                       ->whereRaw('cuenta_corriente.usuario_id = usuarios.id');
 
             })
-            ->where('usuarios.rol','<>','playero')
+            ->where('usuarios.es_cuenta_principal','=','1')
             ->select('id','nombre')
             ->get();
       return view('cuentacorriente.iniciar',['cuentas' => $cuentas]);

@@ -133,7 +133,7 @@ class UsuarioController extends Controller
   {
     $data = request()->validate([
       'dni' => 'required|unique:usuarios,dni',
-      'email' => 'required|unique:usuarios,email',
+      'email' => 'nullable|unique:usuarios,email',
       'password' => 'required|confirmed',
       'nombre' => 'required',
       'rol' => 'required',
@@ -150,17 +150,6 @@ class UsuarioController extends Controller
     }
     $data['password']= bcrypt($data['password']);
     User::create($data);
-    /*User::create([
-      'dni' => $data['dni'],
-      'email' => $data['email'],
-      'password' => bcrypt($data['password']),
-      'rol' => $data['rol'],
-      'nombre' => $data['nombre'],
-      'comentarios' => $data['comentarios'],
-      'estacion_id' => $data['estacion_id'],
-      'cuenta_principal_id' =>  $data['cuenta_principal_id'],
-      'es_cuenta_principal' =>  $data['es_cuenta_principal'],
-    ]);*/
     return redirect()->route('usuarios.index');
   }
 

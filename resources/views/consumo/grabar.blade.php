@@ -5,8 +5,8 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-6">
-            <div class="card">
-                <div class="card-header">¡Consumo registrado con exito!</div>
+            <div class="card ">
+                <div class="card-header text-white bg-success">¡Consumo registrado con exito!</div>
 
                 <div class="card-body">
 
