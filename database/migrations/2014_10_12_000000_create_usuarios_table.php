@@ -31,6 +31,10 @@ class CreateUsuariosTable extends Migration
         DB::statement('ALTER TABLE `usuarios`	ALTER `cuenta_principal_id` DROP DEFAULT;');
         DB::statement('ALTER TABLE `usuarios`
           CHANGE COLUMN `cuenta_principal_id` `cuenta_principal_id` INT(10) UNSIGNED NULL AFTER `comentarios`;');
+        DB::statement(' ALTER TABLE `usuarios`
+        	ALTER `comentarios` DROP DEFAULT;');
+        DB::statement('  ALTER TABLE `usuarios`
+        	CHANGE COLUMN `comentarios` `comentarios` VARCHAR(200) NULL COLLATE \'utf8_unicode_ci\' AFTER `nombre`;');
         DB::statement('ALTER TABLE `usuarios`
             CHANGE COLUMN `estacion_id` `estacion_id` INT(10) UNSIGNED NULL AFTER `es_cuenta_principal`;');
         DB::statement(' ALTER TABLE `usuarios` ALTER `email` DROP DEFAULT;');
