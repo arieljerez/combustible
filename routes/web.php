@@ -24,6 +24,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::resource('usuarios', 'UsuarioController');
     Route::resource('estaciones', 'EstacionController');
     Route::resource('cuentacorriente', 'CuentaCorrienteController');
+    Route::resource('reportes', 'ReporteController');
     Route::get('cuentacorriente/transferir/{id}', 'CuentaCorrienteController@transferir');
     Route::get('cuentacorriente/iniciar/{id}', 'CuentaCorrienteController@iniciar');
     Route::get('cuentacorriente/depositar/{id}', 'CuentaCorrienteController@depositar');

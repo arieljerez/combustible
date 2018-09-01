@@ -323,7 +323,7 @@ class CuentaCorrienteController extends Controller
                      ->leftJoin(DB::raw('usuarios as u'), 'cc.usuario_id','=','u.id')
                      ->leftJoin(DB::raw('usuarios as uo'), 'cc.usuario_id_origen','=','uo.id')
                      ->leftJoin(DB::raw('usuarios as ud'), 'cc.usuario_id_destino','=','ud.id')
-                     ->leftJoin(DB::raw('usuarios as ur'), 'cc.audi_usuario_id','=','ud.id')
+                     ->leftJoin(DB::raw('usuarios as ur'), 'cc.audi_usuario_id','=','ur.id')
                      ->leftJoin(DB::raw('estaciones as es'), 'cc.estacion_id','=','es.id')
                      ->leftJoin(DB::raw('usuarios as co'), 'cc.usuario_id_consumidor','=','co.id')
                  ->select('cc.usuario_id_destino as destino_id','cc.usuario_id_origen as origen_id','cc.linea','u.nombre as cuenta', 'cc.tipo_movimiento', 'cc.saldo',

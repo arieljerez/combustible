@@ -180,6 +180,9 @@
                       <li class="nav-item">
                           <a class="nav-link" href="{{ url('cuentacorriente') }}">{{ __('Cta. Cte.') }}</a>
                       </li>
+                      <li class="nav-item">
+                          <a class="nav-link" href="{{ url('reportes') }}">{{ __('Reportes') }}</a>
+                      </li>
                       @endif
                       <li class="nav-item">
                           <a class="nav-link" href="{{ url('consumo') }}">{{ __('Consumo') }}</a>
