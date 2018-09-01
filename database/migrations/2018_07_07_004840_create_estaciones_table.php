@@ -15,8 +15,11 @@ class CreateEstacionesTable extends Migration
     {
         Schema::create('estaciones', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('codigo',10);
-            $table->string('nombre',100);
+            $table->string('nombre',100)->nullable();
+            $table->string('empresa',100)->nullable();
+            $table->string('localidad',100)->nullable();
+            $table->string('direccion',100)->nullable();
+            $table->string('telefono',100)->nullable();
             $table->timestamps();
         });
     }

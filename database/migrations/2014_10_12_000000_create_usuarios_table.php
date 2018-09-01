@@ -16,7 +16,7 @@ class CreateUsuariosTable extends Migration
         Schema::create('usuarios', function (Blueprint $table) {
             $table->increments('id');
             $table->string('dni')->unique();
-            $table->string('email')->unique();
+            $table->string('email')->unique()->nulleable();
             $table->string('password');
             $table->enum('rol',['administrador','usuario','expendedor','cuenta_principal']);
             $table->string('nombre',200);
@@ -33,6 +33,9 @@ class CreateUsuariosTable extends Migration
           CHANGE COLUMN `cuenta_principal_id` `cuenta_principal_id` INT(10) UNSIGNED NULL AFTER `comentarios`;');
         DB::statement('ALTER TABLE `usuarios`
             CHANGE COLUMN `estacion_id` `estacion_id` INT(10) UNSIGNED NULL AFTER `es_cuenta_principal`;');
+        DB::statement(' ALTER TABLE `usuarios` ALTER `email` DROP DEFAULT;');
+        DB::statement(' ALTER TABLE `usuarios`
+    	    CHANGE COLUMN `email` `email` VARCHAR(255) NULL COLLATE \'utf8_unicode_ci\' AFTER `dni`;');
 
     }
 

@@ -33,6 +33,7 @@ class CreateCuentaCorrienteTable extends Migration
 
             $table->foreign('usuario_id')->references('id')->on('usuarios');
             $table->foreign('audi_usuario_id')->references('id')->on('usuarios');
+            $table->foreign('estacion_id')->references('id')->on('estaciones');
             //$table->foreign('usuario_id_destino')->references('id')->on('usuarios');
             //$table->foreign('usuario_id_origen')->references('id')->on('usuarios');
         });

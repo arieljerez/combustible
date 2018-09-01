@@ -51,7 +51,7 @@
     <label for="email" class="col-md-4 col-form-label text-md-right">{{ __('Correo electrónico') }}</label>
 
     <div class="col-md-6">
-        <input id="email" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" name="email" value="{{ old('email',$usuario->email) }}">
+        <input id="email" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" name="email" value="{{ old('email',$usuario->email) }}" placeholder="nomail@combustible.app">
 
         @if ($errors->has('email'))
             <span class="invalid-feedback" role="alert">
@@ -70,13 +70,13 @@
 </div>
 
 <div class="form-group row">
-    <label for="cuenta_principal" class="col-md-4 col-form-label text-md-right">{{ __('Cuenta principal ') }}</label>
+    <label for="cuenta_principal_id" class="col-md-4 col-form-label text-md-right">{{ __('Cuenta principal ') }}</label>
 
     <div class="col-md-6">
           @php
           $cuentas = App\User::where('es_cuenta_principal',true)->get();
         @endphp
-        <select id="cuenta_principal" name="cuenta_principal" class="form-control">
+        <select id="cuenta_principal_id" name="cuenta_principal_id" class="form-control">
           <option value=""  {{ old('cuenta_principal_id',$usuario->cuenta_principal_id) == '' ? 'selected': '' }} >
             Seleccione una cuenta principal
           </option>

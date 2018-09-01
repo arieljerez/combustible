@@ -104,7 +104,7 @@ class UsuarioController extends Controller
         return 'email';
       }
       if($orderby == 'nombre'){
-        return 'u.nombre';
+        return 'nombre';
       }
 
       if($orderby == 'created_at'){
@@ -144,7 +144,7 @@ class UsuarioController extends Controller
     ], [
       'dni.required' => 'El campo DNI es obligatorio'
     ]);
-
+//dd($data);
     if (!empty($data['es_cuenta_principal'])){
       $data['rol'] = 'cuenta_principal';
     }

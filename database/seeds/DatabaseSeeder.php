@@ -12,18 +12,18 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         $estacion = App\Estacion::create([
-          'codigo' => 'EST01',
-          'nombre' => 'YPF'
+          'nombre' => 'YPF',
+          'empresa' => 'YPF'
         ]);
 
         $estacion = App\Estacion::create([
-          'codigo' => 'EST02',
-          'nombre' => 'SHELL'
+          'nombre' => 'SHELL',
+          'empresa' => 'SHELL'
         ]);
 
         $estacion = App\Estacion::create([
-          'codigo' => 'EST03',
-          'nombre' => 'AXION'
+          'nombre' => 'AXION',
+          'empresa' => 'AXION'
         ]);
 
         $this->call(UsersTableSeeder::class);
