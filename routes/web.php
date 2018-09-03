@@ -17,7 +17,9 @@ Route::get('/', function () {
 
 Auth::routes();
 Route::get('/home', 'HomeController@index')->name('home');
-
+Route::get('/instalar', function(){
+    return view('instalar');
+});
 Route::group(['middleware' => 'auth'], function () {
 
   Route::group(['middleware' => 'admin'], function () {

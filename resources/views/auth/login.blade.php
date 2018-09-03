@@ -58,6 +58,11 @@
                         </div>
                     </form>
                 </div>
+                <div class="card-footer">
+                    <div class="row justify-content-center">
+                        <a href="{{url('instalar')}}" class="btn btn-success">Instalación Mobil</a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
