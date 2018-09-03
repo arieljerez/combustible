@@ -5,7 +5,7 @@
   "theme_color": "#051A30",
   "background_color": "#051A30",
   "description": "Registro consumo combustible",
-  "orientation": "landscape",
+  "display": "standalone",
   "icons": [
     {
       "src": "touch/homescreen96.png",
