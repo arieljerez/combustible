@@ -149,7 +149,7 @@
       color: #ecdbff;
       background-color: #0d72c3;
     }
-    .fas.fa-bars {
+    .fas.fa-bars .dropdown-item {
       color:white;
     }
     </style>
@@ -203,8 +203,8 @@
                                   DNI:  {{ Auth::user()->dni }} <span class="caret"></span>
                                 </a>
 
-                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                                    <a class="dropdown-item" href="{{ route('logout') }}"
+                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown" style="background-color: #051a30">
+                                    <a class="dropdown-item" href="{{ route('logout') }}" style="background-color: #051a30"
                                        onclick="event.preventDefault();
                                                      document.getElementById('logout-form').submit();">
                                         {{ __('Cerrar Sesión') }}
