@@ -84,15 +84,15 @@
 
     @media (max-width: 575px) {
       .navbar-expand-sm .navbar-nav .show .dropdown-menu .dropdown-item {
-        color: #ecf0f1;
+        color: #051a30;
       }
       .navbar-expand-sm .navbar-nav .show .dropdown-menu .dropdown-item:hover,
       .navbar-expand-sm .navbar-nav .show .dropdown-menu .dropdown-item:focus {
-        color: #ecdbff;
+        color: #051a30;
       }
       .navbar-expand-sm .navbar-nav .show .dropdown-menu .dropdown-item.active {
         color: #ecdbff;
-        background-color: #0d72c3;
+        background-color: #051a30;
       }
     }
 
