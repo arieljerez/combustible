@@ -149,7 +149,7 @@
       color: #ecdbff;
       background-color: #0d72c3;
     }
-    .fas.fa-bars .dropdown-item {
+    .fas.fa-bars {
       color:white;
     }
     </style>
