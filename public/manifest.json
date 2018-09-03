@@ -2,17 +2,11 @@
   "short_name": "Combustible",
   "name": "Combustible - San Isidro | Municipio",
   "start_url": "/?utm_source=homescreen",
-<<<<<<< HEAD
   "theme_color": "#051A30",
   "background_color": "#051A30",
   "display": "standalone",
   "description": "Registro consumo combustible",
   "orientation": "landscape",
-=======
-  "background_color": "#051A30",
-  "display": "standalone",
-  "description": "Registro consumo combustible",
->>>>>>> 599ec987a35e0d3d86f2e0b2d2d821c83624ccad
   "icons": [
     {
       "src": "touch/homescreen96.png",
