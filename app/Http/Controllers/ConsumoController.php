@@ -55,7 +55,7 @@ class ConsumoController extends Controller
                               ->value('saldo');
 
       if (($saldo - $monto) < 0){
-          return back()->withErrors(['saldo'=> 'Saldo Insuficiente']);
+          return back()->withErrors(['saldo'=> 'Saldo Insuficiente:  ($'. $saldo.')']);
       }
 
       return redirect()->action(
@@ -95,7 +95,7 @@ class ConsumoController extends Controller
           ],
       ],
       [
-        'saldo.min' => 'Saldo insuficiente'
+        'saldo.min' => 'Saldo insuficiente:  ($'. $datos['saldo'].')'
       ])->validate();
 
       $estacion_id = 1;

@@ -35,9 +35,9 @@
                       </div>
                     </div>
                     <div class="row justify-content-center">
-                      <div class="col-md-8">
+                      <div class="col-md-6">
                         @if ($errors->has('saldo'))
-                                <strong>{{ $errors->first('saldo') }}</strong>
+                            <strong class="text-danger font-weight-bold">{{ $errors->first('saldo') }}</strong>
                         @endif
                       </div>
                     </div>
