@@ -39,4 +39,7 @@ Route::group(['middleware' => 'auth'], function () {
       Route::get('consumo/verificarusuario/{id}/{monto}', 'ConsumoController@verificarusuario');
       Route::post('consumo/grabar/{id}/{monto}', 'ConsumoController@grabar');
     });
+
+    Route::get('micuenta/{id}', 'CuentaCorrienteController@show');
+
 });

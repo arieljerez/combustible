@@ -16,9 +16,11 @@
             @endforeach
               <div class="card-body">
                 <div class="row">
+                  @if(Auth()->user()->rol == 'administrador')
                   <div class="col-md-6 mb-3">
                     <a href="{{url('cuentacorriente')}}" class="btn btn-primary"><i class="far fa-arrow-alt-circle-left"></i> Volver</a>
                   </div>
+                  @endif
                 </div>
 
             @include('cuentacorriente.filters_detalle')

@@ -184,10 +184,21 @@
                       <li class="nav-item">
                           <a class="nav-link" href="{{ url('reportes') }}">{{ __('Reportes') }}</a>
                       </li>
-                      @endif
                       <li class="nav-item">
                           <a class="nav-link" href="{{ url('consumo') }}">{{ __('Consumo') }}</a>
                       </li>
+                      @endif
+                      @if(Auth()->user()->rol == 'expendedor')
+                      <li class="nav-item">
+                          <a class="nav-link" href="{{ url('consumo') }}">{{ __('Consumo') }}</a>
+                      </li>
+                      @endif
+                      @if(Auth()->user()->rol == 'cuenta_principal')
+                      <li class="nav-item">
+                          <a class="nav-link" href="{{ url('micuenta',Auth()->user()->id) }}">{{ __('Mi Cuenta') }}</a>
+                      </li>
+                      @endif
+
                     </ul>
                     @endguest
                     <!-- Right Side Of Navbar -->
