@@ -22,6 +22,13 @@ class ReporteController extends Controller
       return view('reportes.index');
     }
 
+    public function porExpendedor()
+    {
+      if (request('por_estaciones')){
+        $this->reportePorEstacion();
+      }
+      return view('expendedor.reportes');
+    }
 
     public function reportePorEstacion()
     {
@@ -54,8 +61,8 @@ class ReporteController extends Controller
 
       if (request('excel')){
         $datos = json_decode( json_encode($query->get()), true);
-        Excel::create('CuentaDetalle', function($excel) use($datos){
-              $excel->sheet('Excelsheet', function($sheet) use($datos){
+        Excel::create('Consumo', function($excel) use($datos){
+              $excel->sheet('Detalle', function($sheet) use($datos){
                   $sheet->with($datos, null, 'A1', true);
                   $sheet->setOrientation('landscape');
               });

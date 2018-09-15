@@ -32,14 +32,18 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('cuentacorriente/depositar/{id}', 'CuentaCorrienteController@depositar');
     Route::get('cuentacorriente/extraer/{id}', 'CuentaCorrienteController@extraer');
   });
-    Route::group(['middleware' => ['expendedor']], function () {
-      Route::resource('consumo', 'ConsumoController');
-      Route::get('consumo/ingresar/{id}', 'ConsumoController@ingresar');
-      Route::post('consumo/validar/{id}', 'ConsumoController@validar');
-      Route::get('consumo/verificarusuario/{id}/{monto}', 'ConsumoController@verificarusuario');
-      Route::post('consumo/grabar/{id}/{monto}', 'ConsumoController@grabar');
-    });
 
-    Route::get('micuenta/{id}', 'CuentaCorrienteController@show');
+  Route::group(['middleware' => ['expendedor']], function () {
+    Route::resource('consumo', 'ConsumoController');
+    Route::get('consumo/ingresar/{id}', 'ConsumoController@ingresar');
+    Route::post('consumo/validar/{id}', 'ConsumoController@validar');
+    Route::get('consumo/verificarusuario/{id}/{monto}', 'ConsumoController@verificarusuario');
+    Route::post('consumo/grabar/{id}/{monto}', 'ConsumoController@grabar');
+    Route::get('expendedor/reportes','ReporteController@porExpendedor');
+  });
+
+  Route::get('micuenta/{id}', 'CuentaCorrienteController@show');
+
+//  Route::post('expendedor/reportes','ReporteController@porExpendedor');
 
 });

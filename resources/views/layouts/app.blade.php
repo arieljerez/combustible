@@ -192,6 +192,9 @@
                       <li class="nav-item">
                           <a class="nav-link" href="{{ url('consumo') }}">{{ __('Consumo') }}</a>
                       </li>
+                      <li class="nav-item">
+                          <a class="nav-link" href="{{ url('expendedor/reportes') }}">{{ __('Reportes') }}</a>
+                      </li>
                       @endif
                       @if(Auth()->user()->rol == 'cuenta_principal')
                       <li class="nav-item">
