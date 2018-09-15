@@ -144,7 +144,15 @@ class UsuarioController extends Controller
     ], [
       'dni.required' => 'El campo DNI es obligatorio'
     ]);
-//dd($data);
+
+    if ($data['rol'] == 'expendedor'){
+      $data2 = request()->validate([
+        'estacion_id' => 'required'
+      ], [
+        'estacion_id.required' => 'El expendedor debe tener una Estación asignada'
+      ]);
+    }
+
     if (!empty($data['es_cuenta_principal'])){
       $data['rol'] = 'cuenta_principal';
     }
@@ -195,6 +203,13 @@ class UsuarioController extends Controller
               'comentarios' => 'nullable',
               'estacion_id' => 'nullable'
       ]);
+      if ($data['rol'] == 'expendedor'){
+        $data2 = request()->validate([
+          'estacion_id' => 'required'
+        ], [
+          'estacion_id.required' => 'El expendedor debe tener una Estación asignada'
+        ]);
+      }
       if ($data['password'] != null) {
           $data['password'] = bcrypt($data['password']);
       } else {

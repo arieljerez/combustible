@@ -107,7 +107,7 @@
         @php
           $estaciones = \DB::Table('estaciones')->get();
         @endphp
-        <select id="estacion_id" name="estacion_id" class="form-control">
+        <select id="estacion_id" name="estacion_id" class="form-control{{ $errors->has('estacion_id') ? ' is-invalid' : '' }}">
           <option value=""  {{ old('estacion_id',$usuario->estacion_id) == '' ? 'selected': '' }} >
             Seleccione una Estación
           </option>
@@ -117,5 +117,11 @@
           </option>
           @endforeach
         </select>
+        @if ($errors->has('estacion_id'))
+            <span class="invalid-feedback" role="alert">
+                <strong>{{ $errors->first('estacion_id') }}</strong>
+            </span>
+        @endif
     </div>
+
 </div>
