@@ -217,11 +217,14 @@
                                   DNI:  {{ Auth::user()->dni }} <span class="caret"></span>
                                 </a>
 
-                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown" style="background-color: #051a30">
-                                    <a class="dropdown-item" href="{{ route('logout') }}" style="background-color: #051a30"
+                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown" style="background-color: #051a30;color:white">
+                                    <a class="dropdown-item" href="{{ route('logout') }}" style="background-color: #051a30; color:white"
                                        onclick="event.preventDefault();
                                                      document.getElementById('logout-form').submit();">
                                         {{ __('Cerrar Sesión') }}
+                                    </a>
+                                    <a class="dropdown-item" href="{{ url('cambiarclave') }}" style="background-color: #051a30; color:white">
+                                        {{ __('Cambiar Contraseña') }}
                                     </a>
 
                                     <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">

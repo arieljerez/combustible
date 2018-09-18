@@ -236,6 +236,23 @@ class UsuarioController extends Controller
     }catch (\Illuminate\Database\QueryException $e){
        return redirect()->route('usuarios.index')->with('delete_fail','No se pudo eliminar la cuenta');
     }
+  }
 
+  public function cambiarclave()
+  {
+      return view('auth.change');
+  }
+  public function grabarcambiarclave()
+  {
+      $user = \Auth::user();
+      if (!\Hash::check(request('oldpassword'), $user->password)) {
+          return back()->withErrors(['oldpassword' => 'Contraseña Incorrecta']);
+      }
+      $data = request()->validate([
+              'password' => 'required|confirmed',
+      ]);
+      $data['password']= bcrypt($data['password']);
+      $user->update($data);
+      return redirect('/');
   }
 }

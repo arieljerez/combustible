@@ -45,5 +45,6 @@ Route::group(['middleware' => 'auth'], function () {
   Route::get('micuenta/{id}', 'CuentaCorrienteController@show');
 
 //  Route::post('expendedor/reportes','ReporteController@porExpendedor');
-
+  Route::get('cambiarclave', 'UsuarioController@cambiarclave');
+  Route::post('cambiarclave', 'UsuarioController@grabarcambiarclave');
 });
