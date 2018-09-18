@@ -60,7 +60,23 @@ class ReporteController extends Controller
       }
 
       if (request('excel')){
+        $total = $query->sum('cc.monto');
+        $linea_total=   [
+            "cuenta" => "",
+            "linea" => "",
+            "tipo_movimiento" => "",
+            "saldo" => "Total:",
+            "monto" => $total,
+            "momento" => "",
+            "comentarios" => "",
+            "expendedor" => "",
+            "estacion" => "",
+            "empresa" => "",
+            "consumidor" => "",
+            "fecha" => ""
+          ];
         $datos = json_decode( json_encode($query->get()), true);
+        $datos[] = $linea_total;
         Excel::create('Consumo', function($excel) use($datos){
               $excel->sheet('Detalle', function($sheet) use($datos){
                   $sheet->with($datos, null, 'A1', true);
