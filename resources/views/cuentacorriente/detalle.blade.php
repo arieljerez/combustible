@@ -58,7 +58,12 @@
                               <small>{{ \Carbon\Carbon::parse($linea->fecha)->toTimeString() }}</small>
                               </td>
                               <td>${{ $linea->saldo }}</td>
-                              <td>${{ $linea->monto }}</td>
+                              <td>@if($linea->monto < 0)
+                                  <p class="text-danger">${{ $linea->monto }}</p>
+                                  @else
+                                    ${{ $linea->monto }}
+                                  @endif
+                              </td>
                               <td>
                                 @empty ($linea->origen )
                                    {{ $linea->origen }}
