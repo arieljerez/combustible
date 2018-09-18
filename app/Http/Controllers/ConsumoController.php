@@ -19,7 +19,7 @@ class ConsumoController extends Controller
         if( request('dni')){
             // validar DNI
           $data = request()->validate([
-            'dni' => 'required|integer|digits:8',
+            'dni' => 'required',
           ]);
 
           $usuario =  User::where('dni', request('dni'))->first();

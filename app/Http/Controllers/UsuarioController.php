@@ -193,7 +193,7 @@ class UsuarioController extends Controller
   public function update(Request $request, User $usuario)
   {
       $data = request()->validate([
-              'dni' => 'required|digits_between:8,11',
+              'dni' => 'required',
               'email' => 'nullable',
               'password' => 'nullable',
               'nombre' => 'required',
