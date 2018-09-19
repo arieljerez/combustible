@@ -15,6 +15,9 @@
                     @endif
 
                     ¡¡ Bienvenido!!
+                    <p>
+                      {{ Auth::user()->nombre }}
+                    </p>
                 </div>
             </div>
         </div>
