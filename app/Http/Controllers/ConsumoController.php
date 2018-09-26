@@ -98,7 +98,7 @@ class ConsumoController extends Controller
         'saldo.min' => 'Saldo insuficiente:  ($'. $datos['saldo'].')'
       ])->validate();
 
-      $estacion_id = 1;
+      $estacion_id = \Auth::user()->estacion_id;
       $estacion = DB::table('estaciones')->where('id',$estacion_id)->value('nombre');
       $consumidor = DB::table('usuarios')->where('id',$id)->value('nombre');
 
