@@ -202,6 +202,16 @@
                       </li>
                       @endif
 
+                      @if(Auth()->user()->rol == 'visor_cuentas')
+                      <li class="nav-item">
+                          <a class="nav-link" href="{{ url('cuentacorriente') }}">{{ __('Cta. Cte.') }}</a>
+                      </li>
+                      <li class="nav-item">
+                          <a class="nav-link" href="{{ url('reportes') }}">{{ __('Reportes') }}</a>
+                      </li>
+                      @endif
+
+
                     </ul>
                     @endguest
                     <!-- Right Side Of Navbar -->

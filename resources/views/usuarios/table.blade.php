@@ -50,7 +50,7 @@
                               </td>
                               <td>{{ $usuario->nombre }}
                                 <p>
-                                  <small>{{ $usuario->email }}</small>
+                                  <small>{{ $usuario->oficina }}</small>
                                 </p></td>
                               <td>{{ $usuario->rol }}</td>
                               <td>{{ $usuario->cuenta }}</td>

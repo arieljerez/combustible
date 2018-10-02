@@ -24,7 +24,7 @@ class UsuarioController extends Controller
       $query = DB::table(DB::raw('usuarios as u'))
                    ->leftJoin(DB::raw('usuarios as cp'), 'cp.id','=','u.cuenta_principal_id')
                    ->orderby('u.'.$orderby,'ASC')
-                   ->select ('u.dni as dni','u.nombre','u.rol','u.created_at','u.email','u.id','cp.nombre as cuenta');
+                   ->select ('u.dni as dni','u.nombre','u.rol','u.created_at','u.email','u.id','cp.nombre as cuenta','u.oficina');
 
       if ($searchby){
         $query = $query->where($searchby,'like','%'.$search.'%');
@@ -35,7 +35,7 @@ class UsuarioController extends Controller
       }
 
       if (request('excel')){
-        $query = $query->select('u.dni as DNI','u.nombre as Nombre','u.rol','u.created_at as Registro','u.email as Correo-e','cp.nombre as cuenta');
+        $query = $query->select('u.dni as DNI','u.nombre as Nombre','u.rol','u.created_at as Registro','u.email as Correo-e','cp.nombre as cuenta','u.oficina');
         $datos = json_decode( json_encode($query->get()), true);
         Excel::create('Usuarios', function($excel) use($datos){
               $excel->sheet('Excelsheet', function($sheet) use($datos){
@@ -71,6 +71,9 @@ class UsuarioController extends Controller
     }
     if ($rol =='cuenta_principal'){
       return 'cuenta_principal';
+    }
+    if ($rol =='visor_cuentas'){
+      return 'visor_cuentas';
     }
     return '';
   }
@@ -140,7 +143,8 @@ class UsuarioController extends Controller
       'es_cuenta_principal' => 'nullable',
       'cuenta_principal_id' => 'nullable',
       'comentarios' => 'nullable',
-      'estacion_id' => 'nullable'
+      'estacion_id' => 'nullable',
+      'oficina' => 'nullable'
     ], [
       'dni.required' => 'El campo DNI es obligatorio'
     ]);
@@ -201,7 +205,8 @@ class UsuarioController extends Controller
               'es_cuenta_principal' => 'nullable',
               'cuenta_principal_id' => 'nullable',
               'comentarios' => 'nullable',
-              'estacion_id' => 'nullable'
+              'estacion_id' => 'nullable',
+              'oficina' => 'nullable'
       ]);
       if ($data['rol'] == 'expendedor'){
         $data2 = request()->validate([

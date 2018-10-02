@@ -26,11 +26,16 @@ Route::group(['middleware' => 'auth'], function () {
     Route::resource('usuarios', 'UsuarioController');
     Route::resource('estaciones', 'EstacionController');
     Route::resource('cuentacorriente', 'CuentaCorrienteController');
-    Route::resource('reportes', 'ReporteController');
+
     Route::get('cuentacorriente/transferir/{id}', 'CuentaCorrienteController@transferir');
     Route::get('cuentacorriente/iniciar/{id}', 'CuentaCorrienteController@iniciar');
     Route::get('cuentacorriente/depositar/{id}', 'CuentaCorrienteController@depositar');
     Route::get('cuentacorriente/extraer/{id}', 'CuentaCorrienteController@extraer');
+  });
+
+  Route::group(['middleware' => 'visor_cuentas'], function () {
+    Route::resource('cuentacorriente', 'CuentaCorrienteController');
+    Route::resource('reportes', 'ReporteController');
   });
 
   Route::group(['middleware' => ['expendedor']], function () {

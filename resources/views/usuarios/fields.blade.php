@@ -27,12 +27,26 @@
 </div>
 
 <div class="form-group row">
+    <label for="name" class="col-md-4 col-form-label text-md-right">{{ __('Oficina') }}</label>
+
+    <div class="col-md-6">
+        <input id="oficina" type="text" class="form-control{{ $errors->has('oficina') ? ' is-invalid' : '' }}" name="oficina" value="{{ old('oficina',$usuario->oficina) }}" autofocus>
+
+        @if ($errors->has('oficina'))
+            <span class="invalid-feedback" role="alert">
+                <strong>{{ $errors->first('oficina') }}</strong>
+            </span>
+        @endif
+    </div>
+</div>
+<div class="form-group row">
     <label for="name" class="col-md-4 col-form-label text-md-right">{{ __('Rol') }}</label>
 
     <div class="col-md-6">
         <select id="rol" name="rol" class="form-control{{ $errors->has('rol') ? ' is-invalid' : '' }}" required>
           <option value="" {{ old('rol',$usuario->rol)  == '' ? ' selected': ''}}> Roles </option>
           <option value="administrador" {{ old('rol',$usuario->rol)  == 'administrador' ? ' selected': ''}}> Administrador </option>
+          <option value="visor_cuentas" {{ old('rol',$usuario->rol)  == 'visor_cuentas' ? ' selected': ''}}> Visor Cuentas </option>
           <option value="usuario" {{ old('rol',$usuario->rol)  == 'usuario' ? ' selected': ''}}> Usuario </option>
           <option value="expendedor" {{ old('rol',$usuario->rol)  == 'expendedor' ? ' selected': ''}}> Expendedor </option>
           <option value="cuenta_principal" {{ old('rol',$usuario->rol)  == 'cuenta_principal' ? ' selected': ''}}> Cuenta Principal </option>

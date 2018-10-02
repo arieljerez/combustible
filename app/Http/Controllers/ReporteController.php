@@ -53,10 +53,10 @@ class ReporteController extends Controller
                ->orderby('cc.created_at','desc');
 
       if (request('fecha_desde')){
-        $query = $query->where('cc.created_at','>=',request('fecha_desde'));
+        $query = $query->where(DB::raw('DATE(cc.created_at)'),'>=',request('fecha_desde'));
       }
       if (request('fecha_hasta')){
-        $query = $query->where('cc.created_at','<=',request('fecha_hasta'));
+        $query = $query->where(DB::raw('DATE(cc.created_at)'),'<=',request('fecha_hasta'));
       }
 
       if (request('excel')){

@@ -59,19 +59,6 @@ class CuentaCorrienteController extends Controller
 
         return view('cuentacorriente.index',compact('cc'));
     }
-    public function getRol($rol)
-    {
-      if ($rol =='administrador'){
-        return 'administrador';
-      }
-      if ($rol =='usuario'){
-        return 'usuario';
-      }
-      if ($rol =='playero'){
-        return 'playero';
-      }
-      return '';
-    }
 
     public function getPaginacion($perpage)
     {
@@ -328,7 +315,7 @@ class CuentaCorrienteController extends Controller
                      ->leftJoin(DB::raw('usuarios as co'), 'cc.usuario_id_consumidor','=','co.id')
                  ->select('cc.usuario_id_destino as destino_id','cc.usuario_id_origen as origen_id','cc.linea','u.nombre as cuenta', 'cc.tipo_movimiento', 'cc.saldo',
                           'cc.monto','cc.created_at as momento','ud.nombre as destino','uo.nombre as origen',
-                          'cc.comentarios', 'ur.nombre as realizado_por', 'es.nombre as estacion', 'co.nombre as consumidor', 'cc.created_at as fecha'
+                          'cc.comentarios', 'ur.nombre as realizado_por', 'es.nombre as estacion', 'co.nombre as consumidor','co.oficina as consumidor_of', 'cc.created_at as fecha'
                           )
                  ->where('cc.usuario_id',$id)
                  ->orderby('cc.linea','desc');
@@ -336,16 +323,16 @@ class CuentaCorrienteController extends Controller
            $query = $query->where($searchby,'like','%'.$search.'%');
         }
         if (request('fecha_desde')){
-          $query = $query->where('cc.created_at','>=',request('fecha_desde'));
+          $query = $query->where(DB::raw('DATE(cc.created_at)'),'>=',request('fecha_desde'));
         }
         if (request('fecha_hasta')){
-          $query = $query->where('cc.created_at','<=',request('fecha_hasta'));
+          $query = $query->where(DB::raw('DATE(cc.created_at)'),'<=',request('fecha_hasta'));
         }
 
         if (request('excel')){
           $query = $query->select('cc.linea','u.nombre as cuenta', 'cc.tipo_movimiento', 'cc.saldo',
                    'cc.monto','cc.created_at as momento','ud.nombre as destino','uo.nombre as origen',
-                   'cc.comentarios', 'ur.nombre as realizado_por', 'es.nombre as estacion', 'co.nombre as consumidor', 'cc.created_at as fecha'
+                   'cc.comentarios', 'ur.nombre as realizado_por', 'es.nombre as estacion', 'co.nombre as consumidor', 'co.oficina as consumidor_of','cc.created_at as fecha'
                  );
           $datos = json_decode( json_encode($query->get()), true);
           Excel::create('CuentaDetalle', function($excel) use($datos){
