@@ -10,7 +10,7 @@ class CuentaCorriente extends Model
     protected $fillable = [
         'usuario_id','linea','usuario_id_destino','usuario_id_origen',
         'estacion_id','tipo_movimiento','saldo','monto','audi_usuario_id',
-        'comentarios','usuario_id_consumidor'
+        'comentarios','usuario_id_consumidor','cuenta_id_anulacion'
     ];
 
 

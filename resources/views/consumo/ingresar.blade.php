@@ -58,6 +58,65 @@
                   @endisset
                 </div>
             </div>
+
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-md-6"></div>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">Últimos Consumos de: {{ $usuario->nombre }}</div>
+
+                <div class="card-body">
+                    @if (session('status'))
+                        <div class="alert alert-success" role="alert">
+                            {{ session('status') }}
+                        </div>
+                    @endif
+
+
+                        <div class="table-responsive">
+                            <table class="table table-striped table-condensed">
+                                <thead>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                </thead>
+                                <tbody>
+                                @foreach( $consumos as $consumo)
+                                    <tr>
+                                        <td><p>
+                                            {{  $consumo->fecha}}</p>
+                                            <small><strong>Exp:</strong> {{ $consumo->expendedor }}</small>
+                                        </td>
+                                        <td><h5>${{ abs($consumo->monto) }}</h5>
+                                        @if ($consumo->tipo_movimiento == 'anulacion')
+                                            <small> {{ $consumo->comentarios }} </small>
+                                        @endif
+                                        </td>
+                                        <td>
+                                            @if ($consumo->tipo_movimiento == 'consumo')
+                                            @if (!isset($consumo->cuenta_id_anulacion))
+                                            <form action="{{ route('consumo.destroy',$consumo->consumo_id) }}" method="post">
+                                                @csrf
+                                                <input type="hidden" name="_method" value="DELETE">
+                                                <button type="submit" onclick="return confirm('Confirme la anulación: \n Consumo de ${{ abs($consumo->monto) }} del {{ $consumo->fecha }}') " class="btn btn-danger btn-xs"><i class="fa fa-times" aria-hidden="true"></i></button>
+
+                                            </form>
+                                            @else
+                                                    <strong><small>Anulado</small></strong>
+                                            @endif
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

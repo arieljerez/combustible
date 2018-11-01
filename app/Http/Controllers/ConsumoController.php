@@ -2,13 +2,37 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Repositories\Movimiento;
 use App\User;
 use Illuminate\Support\Facades\DB as DB;
-use App\CuentaCorriente;
+
+
 
 class ConsumoController extends Controller
 {
+    public function __construct(Movimiento $movimiento)
+    {
+        $this->movimiento = $movimiento;
+    }
+
+    public function ultimosConsumos($consumidor_id)
+    {
+        return \DB::table('cuenta_corriente')
+                ->where([
+                        ['usuario_id_consumidor','=', $consumidor_id],
+                        ['cuenta_corriente.estacion_id','=', \Auth::user()->estacion_id],
+                ])
+                ->leftJoin(\DB::raw('usuarios as co'), 'usuario_id_consumidor','=','co.id')
+                ->leftJoin(\DB::raw('usuarios as ex'), 'audi_usuario_id','=','ex.id')
+                ->select('cuenta_corriente.monto', 'cuenta_corriente.id as consumo_id', 'cuenta_id_anulacion',
+                    'cuenta_corriente.comentarios',
+                    'ex.nombre as expendedor',
+                    'co.nombre as consumidor', 'cuenta_corriente.created_at as fecha','tipo_movimiento'
+                )->orderBy('cuenta_corriente.id','desc')
+                ->limit(5)
+                ->get();
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -32,7 +56,10 @@ class ConsumoController extends Controller
 
     public function ingresar($id){
       $usuario =  User::where('id',$id)->first();
-      return view('consumo.ingresar',compact('usuario'));
+
+      $consumos = $this->ultimosConsumos($id);
+
+      return view('consumo.ingresar',compact('usuario','consumos'));
     }
 
     public function validar($id){
@@ -71,23 +98,19 @@ class ConsumoController extends Controller
     public function grabar($id,$monto)
     {
       $pin = request('pin');
-      $user = User::find($id);
-      if (!\Hash::check($pin, $user->password)) {
+
+      $consumidor = User::find($id);
+
+      if (!\Hash::check($pin, $consumidor->password)) {
           return back()->withErrors(['pin' => 'PIN incorrecto']);
       }
-      /*
-        if (\Auth::attempt(['id' => $id, 'password' => $pin])) {
-          return back()->withErrors(['pin' => 'PIN incorrecto']);
-        }
-      */
-      $cuenta_principal_id =  User::where('id',$id)->value('cuenta_principal_id');
-      // grabar Consumo
-      //
-      $cuenta_principal= DB::table('cuenta_corriente')->where('usuario_id',$cuenta_principal_id)
-          ->latest()
-          ->first();
 
-      $datos['saldo'] =  $cuenta_principal->saldo - $monto;
+      $cuenta_principal_id =  $consumidor->cuenta_principal_id;
+
+      $cuenta_principal = $this->movimiento->ObtenerCuentaSaldo($cuenta_principal_id);
+
+      $datos['saldo'] =  $cuenta_principal->saldo - abs($monto);
+
       \Validator::make($datos, [
           'saldo' => [
               'numeric',
@@ -100,24 +123,15 @@ class ConsumoController extends Controller
 
       $estacion_id = \Auth::user()->estacion_id;
       $estacion = DB::table('estaciones')->where('id',$estacion_id)->value('nombre');
-      $consumidor = DB::table('usuarios')->where('id',$id)->value('nombre');
 
+        // grabar Consumo
+        //
+      $this->movimiento->Consumir($cuenta_principal_id,$consumidor->id,$monto,$estacion_id,$consumidor->nombre,$estacion);
 
-      $cc = CuentaCorriente::Create([
-        'usuario_id' => $cuenta_principal->usuario_id,
-        'linea' => $cuenta_principal->linea + 1,
-        'tipo_movimiento' => 'consumo',
-        'saldo' => $cuenta_principal->saldo - $monto,
-        'monto' => $monto * -1,
-        'audi_usuario_id' => \Auth::id(),
-        'usuario_id_consumidor' => $id,
-        'estacion_id' => $estacion_id,
-        'comentarios' => 'Consumo Estacion: '. $estacion. ' por '. $consumidor
-      ]);
       $expendedor = \Auth::user()->nombre;
-      $fecha = $cc->created_at;
+      $fecha = date("Y-m-d H:i:s");
 
-
+      $consumidor = $consumidor->nombre;
       $datos = compact(['consumidor','monto','estacion','fecha','expendedor']);
 
       return redirect('consumo/registrado')->with('datos',$datos);
@@ -136,6 +150,12 @@ class ConsumoController extends Controller
         $fecha = $datos['fecha'];
         $expendedor = $datos['expendedor'];
         return view('consumo.grabar',compact(['consumidor','monto','estacion','fecha','expendedor']));
+    }
+
+    public function destroy($movimiento_id)
+    {
+        $this->movimiento->AnularConsumo($movimiento_id);
+        return redirect()->back();
     }
 
 

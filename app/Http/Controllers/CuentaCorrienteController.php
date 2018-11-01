@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB as DB;
 use App\User;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Repositories\Movimiento;
 
 class CuentaCorrienteController extends Controller
 {
@@ -16,6 +17,13 @@ class CuentaCorrienteController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    protected $movimiento;
+
+    public function __construct( Movimiento $movimiento)
+    {
+        $this->movimiento = $movimiento;
+
+    }
     public function index()
     {
         $ultimaslineas = DB::table('cuenta_corriente')
@@ -150,22 +158,20 @@ class CuentaCorrienteController extends Controller
      */
     public function store(Request $request)
     {
+        $cuenta_origen_id  = request('cuenta_origen_id');
+        $cuenta_destino_id  = request('cuenta_destino_id');
+        $monto = request('monto');
+        $comentario = request('comentarios');
+        $tipo_movimiento = request('tipo_movimiento');
 
-      $linea = DB::table('cuenta_corriente')
-                      //  ->select(\Illuminate\Support\Facades\DB::raw('max(linea) as linea'))
-                        ->groupby('usuario_id')
-                        ->where('usuario_id','=',request('cuenta_origen_id'))
-                        ->value(\Illuminate\Support\Facades\DB::raw('max(linea) as linea'));
+      if ( $tipo_movimiento == 'transferencia' ){
 
+          $saldo = DB::table('cuenta_corriente')
+              ->where('usuario_id','=', $cuenta_origen_id )
+              ->orderBy('id','desc')
+              ->limit(1)
+              ->value('saldo');
 
-      $saldo = DB::table('cuenta_corriente')
-                              ->where('usuario_id','=',request('cuenta_origen_id'))
-                              ->where('linea',$linea)
-                              ->value('saldo');
-      $monto = request('monto');
-
-
-      if ( request('tipo_movimiento') == 'transferencia' ){
           $datos = $request->all();
           $datos['saldo'] =  $saldo - $monto;
           Validator::make($datos, [
@@ -178,89 +184,18 @@ class CuentaCorrienteController extends Controller
             'saldo.min' => 'Saldo insuficiente'
           ])->validate();
 
-          $cuentacorriente_egreso = CuentaCorriente::Create([
-            'usuario_id' => request('cuenta_origen_id'),
-            'linea' => $linea + 1,
-            'usuario_id_destino' => request('cuenta_destino_id'),
-            'tipo_movimiento' => 'transferencia',
-            'saldo' => $saldo - $monto,
-            'monto' => $monto * -1,
-            'audi_usuario_id' => \Auth::id(),
-            'comentarios' => request('comentarios')
-          ]);
+        $this->movimiento->Transferir($cuenta_origen_id,$cuenta_destino_id,$monto,$comentario);
 
-          $linea = DB::table('cuenta_corriente')
-                          //  ->select(\Illuminate\Support\Facades\DB::raw('max(linea) as linea'))
-                            ->groupby('usuario_id')
-                            ->where('usuario_id','=',request('cuenta_destino_id'))
-                            ->value(\Illuminate\Support\Facades\DB::raw('max(linea) as linea'));
-
-
-          $saldo = DB::table('cuenta_corriente')
-                                  ->where('usuario_id','=',request('cuenta_destino_id'))
-                                  ->where('linea',$linea)
-                                  ->value('saldo');
-          $monto = request('monto');
-
-          $cuentacorriente_ingreso = CuentaCorriente::Create([
-            'usuario_id' => request('cuenta_destino_id'),
-            'linea' => $linea + 1,
-            'usuario_id_origen' => request('cuenta_origen_id'),
-            'tipo_movimiento' => 'transferencia',
-            'saldo' => $saldo + $monto,
-            'monto' => $monto,
-            'audi_usuario_id' => \Auth::id(),
-            'comentarios' => request('comentarios')
-          ]);
       }
 
-      if ( request('tipo_movimiento') == 'deposito' ){
-
-        $linea = DB::table('cuenta_corriente')
-                          ->groupby('usuario_id')
-                          ->where('usuario_id','=',request('cuenta_origen_id'))
-                          ->value(DB::raw('max(linea) as linea'));
-
-        $linea = $linea ? $linea: 0 ;
-
-        $saldo = DB::table('cuenta_corriente')
-                                ->where('usuario_id','=',request('cuenta_origen_id'))
-                                ->where('linea',$linea)
-                                ->value('saldo');
-        $saldo = $saldo ? $saldo : 0 ;
-
-        $monto = request('monto');
-
-        $cuentacorriente_ingreso = CuentaCorriente::Create([
-          'usuario_id' => request('cuenta_origen_id'),
-          'linea' => $linea + 1,
-          'tipo_movimiento' => request('tipo_movimiento'),
-          'saldo' => $saldo + $monto,
-          'monto' => $monto,
-          'audi_usuario_id' => \Auth::id(),
-          'comentarios' => request('comentarios')
-        ]);
+      if ( $tipo_movimiento == 'deposito' ){
+          $this->movimiento->Depositar($cuenta_origen_id,$monto,$comentario);
       }
 
-      if ( request('tipo_movimiento') == 'extraccion' ){
-
-        $linea = DB::table('cuenta_corriente')
-                          ->groupby('usuario_id')
-                          ->where('usuario_id','=',request('cuenta_origen_id'))
-                          ->value(DB::raw('max(linea) as linea'));
-
-        $linea = $linea ? $linea: 0 ;
-
-        $saldo = DB::table('cuenta_corriente')
-                                ->where('usuario_id','=',request('cuenta_origen_id'))
-                                ->where('linea',$linea)
-                                ->value('saldo');
-        $saldo = $saldo ? $saldo : 0 ;
-
-        $monto = request('monto');
+      if ( $tipo_movimiento == 'extraccion' ){
 
         $datos = $request->all();
-        $datos['saldo'] =  $saldo - $monto;
+        $datos['saldo'] =  $this->movimiento->ObtenerCuentaSaldo($cuenta_origen_id)->saldo - $monto;
         Validator::make($datos, [
             'saldo' => [
                 'numeric',
@@ -271,15 +206,7 @@ class CuentaCorrienteController extends Controller
           'saldo.min' => 'Saldo insuficiente'
         ])->validate();
 
-        $cuentacorriente_ingreso = CuentaCorriente::Create([
-          'usuario_id' => request('cuenta_origen_id'),
-          'linea' => $linea + 1,
-          'tipo_movimiento' => request('tipo_movimiento'),
-          'saldo' => $saldo - $monto,
-          'monto' => $monto * -1,
-          'audi_usuario_id' => \Auth::id(),
-          'comentarios' => request('comentarios')
-        ]);
+        $this->movimiento->Extraer($cuenta_origen_id,$monto,$comentario);
       }
 
       return redirect()->route('cuentacorriente.index');

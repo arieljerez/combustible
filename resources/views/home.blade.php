@@ -18,6 +18,10 @@
                     <p>
                       {{ Auth::user()->nombre }}
                     </p>
+
+                    @if (\Auth::user()->rol == 'expendedor')
+                        @include('expendedor.UltimosConsumos')
+                    @endif
                 </div>
             </div>
         </div>

@@ -67,7 +67,7 @@
                     <div class="form-group row mb-0">
                         <div class="col-md-6 offset-md-4">
                             <button type="submit" class="btn btn-primary">
-                              <i class="fas fa-save"></i> {{ __('grabar') }}
+                              <i class="fas fa-save"></i> {{ __('Grabar') }}
                             </button>
                             <a href="{{ url('cuentacorriente') }}" class="btn btn-primary"> <i class="far fa-arrow-alt-circle-left"></i> Volver</a>
                         </div>
