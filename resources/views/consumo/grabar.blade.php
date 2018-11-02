@@ -56,7 +56,7 @@
 
                     <div class="row justify-content-center">
                       <div class="col-md-8">
-                          <a href="{{ url('consumo') }}" type="button" class="btn btn-primary">
+                          <a href="{{ url('consumo') }}" type="button" class="btn btn-primary btn-lg btn-block">
                             <i class="fas fa-back"></i> {{ __('Volver') }}
                           </a>
                       </div>

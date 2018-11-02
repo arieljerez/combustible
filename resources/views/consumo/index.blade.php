@@ -33,8 +33,8 @@
                         </div>
 
                         <div class="row justify-content-center">
-                            <div class="col-md-6">
-                                <button type="submit" class="btn btn-primary">
+                            <div class="col-md-8">
+                                <button type="submit" class="btn btn-primary  btn-lg btn-block">
                                   <i class="fas fa-search"></i> {{ __('Continuar') }}
                                 </button>
                             </div>

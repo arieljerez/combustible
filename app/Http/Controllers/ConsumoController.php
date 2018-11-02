@@ -71,17 +71,10 @@ class ConsumoController extends Controller
 
       $cuenta_principal_id =  User::where('id',$id)->value('cuenta_principal_id');
 
-      $linea = \DB::table('cuenta_corriente')
-                      //  ->select(\Illuminate\Support\Facades\DB::raw('max(linea) as linea'))
-                        ->groupby('usuario_id')
-                        ->where('usuario_id','=',$cuenta_principal_id)
-                        ->value(DB::raw('max(linea) as linea'));
-      $saldo = DB::table('cuenta_corriente')
-                              ->where('usuario_id','=',$cuenta_principal_id)
-                              ->where('linea',$linea)
-                              ->value('saldo');
 
-      if (($saldo - $monto) < 0){
+      $cuenta_principal = $this->movimiento->ObtenerCuentaSaldo($cuenta_principal_id);
+      $saldo = $cuenta_principal->saldo;
+      if (( $saldo - $monto) < 0){
           return back()->withErrors(['saldo'=> 'Saldo Insuficiente:  ($'. $saldo.')']);
       }
 

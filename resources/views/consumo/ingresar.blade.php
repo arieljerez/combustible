@@ -23,8 +23,8 @@
                     <div class="row justify-content-center">
                       <label for="monto">Monto Consumido:</label>
                     </div>
-                    <div class="row justify-content-center">
 
+                    <div class="row justify-content-center">
                       <div class="input-group-append col-md-8">
                         <div class="input-group-prepend">
                           <div class="input-group-text">
@@ -34,6 +34,7 @@
                         <input type="number" min="0" step=".01" name="monto" id="monto" class="form-control{{ $errors->has('saldo') ? ' is-invalid' : '' }}" value="{{ old('monto') }}" required>
                       </div>
                     </div>
+
                     <div class="row justify-content-center">
                       <div class="col-md-6">
                         @if ($errors->has('saldo'))
@@ -42,14 +43,14 @@
                       </div>
                     </div>
 
-                    <div class="row justify-content-center">
-                      <div class="col-md-8">
+                    <div class="row center">
+                      <div class="col-md-12">
                           &nbsp;
                       </div>
                     </div>
                     <div class="row justify-content-center">
                       <div class="col-md-8">
-                          <button type="submit" class="btn btn-primary">
+                          <button type="submit" class="btn btn-primary btn-lg btn-block">
                             <i class="fas fa-save"></i> {{ __('Continuar') }}
                           </button>
                       </div>
@@ -79,11 +80,6 @@
 
                         <div class="table-responsive">
                             <table class="table table-striped table-condensed">
-                                <thead>
-                                <th></th>
-                                <th></th>
-                                <th></th>
-                                </thead>
                                 <tbody>
                                 @foreach( $consumos as $consumo)
                                     <tr>

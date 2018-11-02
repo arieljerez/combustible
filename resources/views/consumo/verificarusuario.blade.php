@@ -10,7 +10,7 @@
 
                 <div class="card-body">
 
-                  <form method="post" action="{{ url('consumo/grabar',[$id,$monto]) }}" aria-label="{{ __('validar') }}">
+                  <form method="post" action="{{ url('consumo/grabar',[$id,$monto]) }}" aria-label="{{ __('validar') }}" onsubmit="return checkSubmit();">
                     @csrf
 
                     <div class="row justify-content-center">
@@ -41,10 +41,11 @@
 
                     <div class="row justify-content-center">
                       <div class="col-md-8">
-                          <button type="submit" class="btn btn-primary">
+                          <button type="submit" id="btsubmit" class="btn btn-primary btn-lg btn-block">
                             <i class="fas fa-save"></i> {{ __('Registrar') }}
                           </button>
                       </div>
+
                     </div>
 
                   </form>
@@ -53,4 +54,14 @@
         </div>
     </div>
 </div>
+@endsection
+@section("js")
+<script type="application/javascript">
+    function checkSubmit() {
+        var btn = document.getElementById("btsubmit");
+        btn.innerHTML = "Procesando...";
+        document.getElementById("btsubmit").disabled = true;
+        return true;
+    }
+</script>
 @endsection
