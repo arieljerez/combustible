@@ -40,6 +40,10 @@
                         @if ($errors->has('saldo'))
                             <strong class="text-danger font-weight-bold">{{ $errors->first('saldo') }}</strong>
                         @endif
+
+                        @if ($errors->has('bloqueo_consumo'))
+                            <strong class="text-danger text-warning">{{ $errors->first('bloqueo_consumo') }}</strong>
+                        @endif
                       </div>
                     </div>
 
@@ -64,6 +68,16 @@
     </div>
     <div class="row justify-content-center">
         <div class="col-md-6"></div>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+
+          <div class="card">
+              <div class="card-body justify-content-center">
+                <h2 class="text-center text-primary">Saldo: ${{$saldo}} </h2>
+              </div>
+          </div>
+        </div>
     </div>
     <div class="row justify-content-center">
         <div class="col-md-6">
@@ -94,16 +108,21 @@
                                         </td>
                                         <td>
                                             @if ($consumo->tipo_movimiento == 'consumo')
-                                            @if (!isset($consumo->cuenta_id_anulacion))
-                                            <form action="{{ route('consumo.destroy',$consumo->consumo_id) }}" method="post">
-                                                @csrf
-                                                <input type="hidden" name="_method" value="DELETE">
-                                                <button type="submit" onclick="return confirm('Confirme la anulación: \n Consumo de ${{ abs($consumo->monto) }} del {{ $consumo->fecha }}') " class="btn btn-danger btn-xs"><i class="fa fa-times" aria-hidden="true"></i></button>
+                                              @php
+                                                $es_de_hoy = (Carbon\Carbon::now()->format('d-m-Y') == Carbon\Carbon::parse($consumo->fecha)->format('d-m-Y'))
+                                              @endphp
+                                              @if (!isset($consumo->cuenta_id_anulacion))
+                                                @if ($es_de_hoy)
+                                                  <form action="{{ route('consumo.destroy',$consumo->consumo_id) }}" method="post">
+                                                      @csrf
+                                                      <input type="hidden" name="_method" value="DELETE">
+                                                      <button type="submit" onclick="return confirm('Confirme la anulación: \n Consumo de ${{ abs($consumo->monto) }} del {{ $consumo->fecha }}') " class="btn btn-danger btn-xs"><i class="fa fa-times" aria-hidden="true"></i></button>
 
-                                            </form>
-                                            @else
-                                                    <strong><small>Anulado</small></strong>
-                                            @endif
+                                                  </form>
+                                                @endif
+                                              @else
+                                                      <strong><small>Anulado</small></strong>
+                                              @endif
                                             @endif
                                         </td>
                                     </tr>

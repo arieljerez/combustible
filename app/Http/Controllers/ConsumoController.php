@@ -6,8 +6,6 @@ use App\Repositories\Movimiento;
 use App\User;
 use Illuminate\Support\Facades\DB as DB;
 
-
-
 class ConsumoController extends Controller
 {
     public function __construct(Movimiento $movimiento)
@@ -15,6 +13,21 @@ class ConsumoController extends Controller
         $this->movimiento = $movimiento;
     }
 
+    public function minutosRestantesProximoConsumo($consumidor_id)
+    {
+      $minutos = 0;
+      $tiempo_bloqueo = env('BLOQUEO_CONSUMO_TIEMPO', '00:06');
+      $t= \DB::table('cuenta_corriente')
+      ->where([
+                ['usuario_id_consumidor','=', $consumidor_id],
+                ['created_at','>',\DB::raw('SUBTIME(now(), \''.$tiempo_bloqueo.'\')')]
+              ])
+      ->select(\DB::raw('TIMESTAMPDIFF(MINUTE,  SUBTIME(now(), \''. $tiempo_bloqueo .'\'), created_at) as minutos'))
+      ->first();
+
+      $minutos = isset($t) ? $t->minutos: $minutos;
+      return $minutos;
+    }
     public function ultimosConsumos($consumidor_id)
     {
         return \DB::table('cuenta_corriente')
@@ -58,8 +71,11 @@ class ConsumoController extends Controller
       $usuario =  User::where('id',$id)->first();
 
       $consumos = $this->ultimosConsumos($id);
+      $cuenta_principal_id =  User::where('id',$id)->value('cuenta_principal_id');
+      $cuenta_principal = $this->movimiento->ObtenerCuentaSaldo($cuenta_principal_id);
+      $saldo = isset($cuenta_principal) ? $cuenta_principal->saldo: 0;
 
-      return view('consumo.ingresar',compact('usuario','consumos'));
+      return view('consumo.ingresar',compact('usuario','consumos','saldo'));
     }
 
     public function validar($id){
@@ -73,10 +89,16 @@ class ConsumoController extends Controller
 
 
       $cuenta_principal = $this->movimiento->ObtenerCuentaSaldo($cuenta_principal_id);
-      $saldo = $cuenta_principal->saldo;
+      $saldo =  isset($cuenta_principal) ? $cuenta_principal->saldo: 0;
+
       if (( $saldo - $monto) < 0){
           return back()->withErrors(['saldo'=> 'Saldo Insuficiente:  ($'. $saldo.')']);
       }
+
+      if (( $tiempo =  $this->minutosRestantesProximoConsumo($id) ) > 0){
+          return back()->withErrors(['bloqueo_consumo'=> 'Debe esperar:'. $tiempo.' minuto(s) antes de registrar un nuevo consumo']);
+      }
+
 
       return redirect()->action(
         'ConsumoController@verificarusuario', ['id' => $id, 'monto' => $monto]
