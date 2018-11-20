@@ -70,11 +70,12 @@ class Movimiento
             $cuenta_destino = $this->ObtenerCuentaSaldo($cuenta_destino_id);
 
             $saldo = isset($cuenta_destino->saldo) ? $cuenta_destino->saldo: 0;
+            $linea = isset($cuenta_destino->linea) ? $cuenta_destino->linea + 1: 1;
             $monto = abs($monto);
 
             CuentaCorriente::Create([
-                'usuario_id' => $cuenta_destino->usuario_id,
-                'linea' => $cuenta_destino->linea + 1,
+                'usuario_id' => $cuenta_destino_id,
+                'linea' => $linea,
                 'tipo_movimiento' => 'deposito',
                 'saldo' => $saldo + $monto,
                 'monto' => $monto,
